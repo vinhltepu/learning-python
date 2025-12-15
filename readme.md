@@ -9,3 +9,4 @@
 
 1. Khi làm xong bài -> Mở Github Desktop -> Commit bài -> Push lên git
 
+2. Commit thử
