@@ -333,7 +333,7 @@ print(name.find("vinh"))
 #True
 #5
 
-#Bai 7: Join + List + String
+#Bai 17: Join + List + String
 #Yeu cau
 #Tao danh sach thanh pho.
 #Noi cac phan tu bang dau -.
@@ -350,3 +350,71 @@ print(type(result))
 #Output
 #HaNoi - DaNang - SaiGon
 #<class 'str'>
+
+
+
+##Bai 18: Reference danh sach diem
+#Yeu cau
+#Tao danh sach diem.
+#Gan danh sach sang bien moi.
+#Thay doi danh sach ban dau.
+#Tao ban sao dung slicing.
+
+
+scores = [7, 8, 9]
+scores_ref = scores
+
+scores[0] = 10
+
+print("scores:", scores)
+print("scores_ref:", scores_ref)
+
+scores_copy = scores[:]
+scores_copy[0] = 5
+
+print("scores:", scores)
+print("scores_copy:", scores_copy)
+
+#Output
+#scores: [10, 8, 9]
+#scores_ref: [10, 8, 9]
+#scores: [10, 8, 9]
+#scores_copy: [5, 8, 9]
+
+
+
+
+#Bai 13: Tuple thong tin lop hoc
+#Yeu cau
+#Tao tuple thong tin lop hoc.
+#In toan bo thong tin.
+#Truy cap ten lop.
+#Truy cap so luong sinh vien.
+
+class_info = ("DTKTMT", 45, "phong 302")
+
+print(class_info)
+print("Ten lop:", class_info[0])
+print("So sinh vien:", class_info[1])
+
+#Output
+#('DTKTMT', 45, 'phong 302')
+#Ten lop: DTKTMT
+#So sinh vien: 45
+
+#Bai 20: Tuple + list + indexing
+#eu cau
+#Tao tuple chua cac so.
+#Dat tuple vao trong list.
+#Truy cap tuple tu list
+#Truy cap phan tu cuoi trong tuple.
+
+numbers = (1, 2, 3)
+data = ["a", numbers, "b"]
+
+print(data[1])
+print(data[1][-1])
+
+#Output
+#(1, 2, 3)
+#3
