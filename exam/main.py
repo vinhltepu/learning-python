@@ -38,7 +38,7 @@ def add_product():
         conn = connect()
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO products(name, code, unit, import_price,sell_price,stock,imported_date) VALUES (?, ?, ?, ?)",
+            "INSERT INTO products(name, code, unit, import_price,sell_price,stock,imported_date) VALUES (?, ?, ?, ?,?,?,?)",
             (name, code, price, stock)
         )
         conn.commit()
@@ -62,9 +62,12 @@ def edit_product(pid):
     cur = conn.cursor()
 
     
-    cur.execute("SELECT id, name, code, price, import_price, sell_price, stock, imported_date FROM products WHERE id=?", (pid,))
-    product = cur.fetchone()
-
+    cur.execute("""
+       UPDATE products
+       SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?
+       WHERE id=?
+    """, (name, code, unit, import_price, sell_price, stock, imported_date, pid))
+    conn.commit()
 
     if product is None:
         conn.close()
