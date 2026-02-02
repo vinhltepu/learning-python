@@ -23,6 +23,10 @@ def create_tables():
         sell_price REAL NOT NULL DEFAULT 0,
         stock INTEGER NOT NULL DEFAULT 0,
         imported_date TEXT NOT NULL
+                
+        product_type TEXT NOT NULL DEFAULT 'base', 
+        paint_brand TEXT,
+        wood_source TEXT       
     );
     """)
 
