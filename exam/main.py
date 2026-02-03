@@ -47,7 +47,7 @@ def add_product():
         if cur.rowcount > 0:
             print(" thêm sản phẩm thành công")
         else:
-            print(" thêm sản phẩm thất bại")
+            print(" thêm sản phẩm thất bại") 
 
         conn.close()
         return redirect(url_for("products"))
