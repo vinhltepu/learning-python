@@ -22,7 +22,7 @@ def create_tables():
         import_price REAL NOT NULL DEFAULT 0,
         sell_price REAL NOT NULL DEFAULT 0,
         stock INTEGER NOT NULL DEFAULT 0,
-        imported_date TEXT NOT NULL
+        imported_date TEXT NOT NULL,
                 
         product_type TEXT NOT NULL DEFAULT 'base', 
         paint_brand TEXT,
