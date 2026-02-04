@@ -1,6 +1,21 @@
 class Product:
-    def __init__(self, id, name, code, unit, import_price, sell_price, stock, imported_date,
-                 product_type="base", paint_brand=None, wood_source=None):
+    """
+    Định nghia class sản phẩm cơ bản với các thuộc tính chung.
+    __init__ nhận các tham số cần thiết để khởi tạo một sản phẩm.
+    self: tham chiếu đến đối tượng hiện tại của class.
+    """
+    def __init__(
+            self, 
+            id, 
+            name, 
+            code, 
+            unit,
+            import_price, 
+            sell_price, 
+            stock, 
+            imported_date,
+            product_type="base"
+        ):
         self.id = id
         self.name = name
         self.code = code
@@ -10,41 +25,114 @@ class Product:
         self.stock = stock
         self.imported_date = imported_date
         self.product_type = product_type
-        self.paint_brand = paint_brand
-        self.wood_source = wood_source
 
-   
+        # Kiểm tra tính hợp lệ của dữ liệu
+        if sell_price < import_price:
+            raise ValueError("Giá bán phải lớn hơn hoặc bằng giá nhập")
+        if stock < 0:
+            raise ValueError("Tồn kho không được âm")
+        if len(name) < 1 or len(code) < 1:
+            raise ValueError("Tên và mã sản phẩm không được để trống")
+
+    # Thêm phương thức extra_info để trả về thông tin bổ sung
     def extra_info(self):
         return ""
+    
+    # Phương thức để chuyển đổi đối tượng thành dict
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'code': self.code,
+            'unit': self.unit,
+            'import_price': self.import_price,
+            'sell_price': self.sell_price,
+            'stock': self.stock,
+            'imported_date': self.imported_date,
+            'product_type': self.product_type,
+            'extra_info': self.extra_info()
+        }
 
 class PaintingProduct(Product):
-    def __init__(self, *args, paint_brand=None, **kwargs):
-        super().__init__(*args, product_type="painting", paint_brand=paint_brand, **kwargs)
+    # Định nghĩa class sản phẩm sơn kế thừa từ Product
+    def __init__(
+            self, 
+            *args, 
+            paint_brand=None, 
+            **kwargs
+        ):
+        super().__init__(
+            *args, 
+            product_type="painting",
+            **kwargs
+        )
 
+        # Thuộc tính riêng của sản phẩm sơn
+        self.paint_brand = paint_brand
+
+    # Phương thức trả về thông tin bổ sung, override từ lớp cha
     def extra_info(self):
         return f"Hãng sơn: {self.paint_brand or ''}"
 
-class WoodProduct(Product):
-    def __init__(self, *args, wood_source=None, **kwargs):
-        super().__init__(*args, product_type="wood", wood_source=wood_source, **kwargs)
+    # Phương thức để chuyển đổi đối tượng thành dict, override từ lớp cha
+    def to_dict(self):
+        data = super().to_dict()
+        data['paint_brand'] = self.paint_brand
+        return data
 
+class WoodProduct(Product):
+    # Định nghĩa class sản phẩm gỗ kế thừa từ Product
+    def __init__(
+            self, 
+            *args, 
+            wood_source=None, 
+            **kwargs):
+        super().__init__(
+            *args, 
+            product_type="wood",
+            **kwargs
+        )
+        # Thuộc tính riêng của sản phẩm gỗ
+        self.wood_source = wood_source
+    # Phương thức trả về thông tin bổ sung, override từ lớp cha
     def extra_info(self):
         return f"Nguồn gỗ: {self.wood_source or ''}"
 
-def product_from_row(row):
+    # Phương thức để chuyển đổi đối tượng thành dict, override từ lớp cha
+    def to_dict(self):
+        data = super().to_dict()
+        data['wood_source'] = self.wood_source
+        return data
 
+"""
+Cháu thêm một vài class con để minh họa cách mở rộng từ class Product nhé
+
+"""
+
+def product_from_row(row):
+    # Hàm tạo đối tượng sản phẩm từ dict
+    # dùng row.get(...) để tránh lỗi khi key không tồn tại
     base_args = (
-        row["id"], row["name"], row["code"],
-        row["unit"], row["import_price"], row["sell_price"],
-        row["stock"], row["imported_date"]
+        row.get("id"),
+        row.get("name"),
+        row.get("code"),
+        row.get("unit"),
+        row.get("import_price"),
+        row.get("sell_price"),
+        row.get("stock"),
+        row.get("imported_date")
     )
 
-    ptype = row["product_type"]
+    ptype = row.get("product_type")
 
     if ptype == "painting":
-        return PaintingProduct(*base_args, paint_brand=row["paint_brand"])
+        return PaintingProduct( *base_args, paint_brand=row.get("paint_brand") )
     if ptype == "wood":
-        return WoodProduct(*base_args, wood_source=row["wood_source"])
+        return WoodProduct( *base_args, wood_source=row.get("wood_source") )
 
-    return Product(*base_args, product_type=ptype,
-                   paint_brand=row["paint_brand"], wood_source=row["wood_source"])
+    return Product(
+        *base_args, 
+        product_type=ptype,
+        paint_brand=row.get("paint_brand"),
+        wood_source=row.get("wood_source")
+    )
