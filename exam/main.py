@@ -1,108 +1,109 @@
-from flask import Flask, render_template, request, redirect, url_for
-from db import create_tables, connect
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash
+
+from extensions import db
+from services.customer_service import (
+    list_customers, get_customer, create_customer, update_customer, delete_customer
+)
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "dev"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASE_DIR, "shop.db")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db.init_app(app)
+
+with app.app_context():# tạo bảng tự động , 
+    db.create_all()
 
 
-create_tables()#tạo database
-
-
-@app.route("/")
+@app.route("/")# thêm list và search
 def home():
-    return redirect(url_for("products"))
+    return redirect(url_for("customers"))
 
 
-# hiển thị danh sách 
-@app.route("/products")
-def products():
-    conn = connect()
-    cur = conn.cursor()
-    cur.execute("SELECT id, name, code,unit,impore_price,stell_price,imported_date stock FROM products ORDER BY id DESC")# sửa để khớp với db.main
-    items = cur.fetchall()
-    conn.close()
-    return render_template("products.html", items=items)
+@app.route("/customers")
+def customers():
+    kw = request.args.get("kw", "").strip()
+    customers = list_customers(kw)
+    return render_template("customers.html", customers=customers, kw=kw)
 
-
-# mục thêm sản phẩm 
-@app.route("/products/add", methods=["GET", "POST"])
-def add_product():
+@app.route("/customers/add", methods=["GET", "POST"])# thêm thông tin về khách hàng 
+def customer_add():
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        code = request.form.get("code", "").strip()
-        unit = request.form.get("unit", "").strip()
-        import_price = float(request.form.get("import_price", "0") or "0")
-        sell_price = float(request.form.get("sell_price", "0") or "0")
-        stock = int(request.form.get("stock", "0") or "0")
-        imported_date = request.form.get("imported_date", "").strip()
+        phone = request.form.get("phone", "").strip()
+        address = request.form.get("address", "").strip()
+        total_spent_raw = request.form.get("total_spent", "0").strip()
+        customer_type = request.form.get("customer_type", "regular").strip()
 
-        conn = connect()
-        cur = conn.cursor()
-        cur.execute(
-            "INSERT INTO products(name, code, unit, import_price,sell_price,stock,imported_date) VALUES (?, ?, ?, ?,?,?,?)",
-            (name, code, price, stock)
-        )
-        conn.commit()
+        if not name:
+            flash("tên không được để trống", "danger")
+            return render_template("customer_form.html", mode="add", customer=None)
 
-    # tạo thông báo lỗi thì tạo thất bại 
-        if cur.rowcount > 0:
-            print(" thêm sản phẩm thành công")
-        else:
-            print(" thêm sản phẩm thất bại") 
+        if not phone.isdigit():
+            flash("SĐT phải là số", "danger")
+            return render_template("customer_form.html", mode="add", customer=None)
 
-        conn.close()
-        return redirect(url_for("products"))
+        try:
+            total_spent = int(total_spent_raw)
+            if total_spent < 0:
+                total_spent = 0
+        except:
+            flash("tổng tiền đã mua phải là số", "danger")
+            return render_template("customer_form.html", mode="add", customer=None)
 
-    return render_template("product_form.html", mode="add", product=None)
+        create_customer(name, phone, address, total_spent, customer_type)
+        flash("Thêm khách hàng thành công", "success")
+        return redirect(url_for("customers"))
 
+    return render_template("customer_form.html", mode="add", customer=None)
 
-# chức năng sửa sản phẩm 
-@app.route("/products/<int:pid>/edit", methods=["GET", "POST"])
-def edit_product(pid):
-    conn = connect()
-    cur = conn.cursor()
-
-    
-    cur.execute("""
-       UPDATE products
-       SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?
-       WHERE id=?
-    """, (name, code, unit, import_price, sell_price, stock, imported_date, pid))
-    conn.commit()
-
-    if product is None:
-        conn.close()
-        return "Product not found", 404
+@app.route("/customers/<int:cid>/edit", methods=["GET", "POST"]) # phần chỉnh sửa khách hàng 
+def customer_edit(cid):
+    customer = get_customer(cid)
+    if not customer:
+        return "Customer not found", 404
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
-        code = request.form.get("code", "").strip()
-        import_price = float(request.form.get("import_price", "0") or "0")
-        sell_price = float(request.form.get("sell_price", "0") or "0")
-        stock = int(request.form.get("stock", "0") or "0")
-        imported_date = request.form.get("imported_date", "").strip()
+        phone = request.form.get("phone", "").strip()
+        address = request.form.get("address", "").strip()
+        total_spent_raw = request.form.get("total_spent", "0").strip()
 
-        cur.execute("""
-            UPDATE products
-            SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?
-            WHERE id=?
-        """, (name, code, price, stock, pid))
+        if not name:
+            flash("tên không được để trống", "danger")
+            return render_template("customer_form.html", mode="edit", customer=customer)
 
-        conn.commit()
-        conn.close()
-        return redirect(url_for("products"))
+        if not phone.isdigit():
+            flash("SĐT phải là số", "danger")
+            return render_template("customer_form.html", mode="edit", customer=customer)
 
-    conn.close()
-    return render_template("product_form.html", mode="edit", product=product)
+        try:
+            total_spent = int(total_spent_raw)
+            if total_spent < 0:
+                total_spent = 0
+        except:
+            flash("tổng tiền đã mua phải là số", "danger")
+            return render_template("customer_form.html", mode="edit", customer=customer)
 
-# chức năng xóa sản phẩm 
-@app.route("/products/<int:pid>/delete", methods=["POST"])
-def delete_product(pid):
-    conn = connect()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM products WHERE id=?", (pid,))
-    conn.commit()
-    conn.close()
-    return redirect(url_for("products"))
+        update_customer(customer, name, phone, address, total_spent)
+        flash("cập nhật khách hàng thành công", "success")
+        return redirect(url_for("customers"))
+
+    return render_template("customer_form.html", mode="edit", customer=customer)
+
+@app.route("/customers/<int:cid>/delete", methods=["POST"])# xóa khách hàng khỏi danh sách 
+def customer_delete(cid):
+    customer = get_customer(cid)
+    if not customer:
+        return "Customer not found", 404
+
+    delete_customer(customer)
+    flash("đã xóa khách hàng", "success")
+    return redirect(url_for("customers"))
 
 
 if __name__ == "__main__":
