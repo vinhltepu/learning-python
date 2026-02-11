@@ -1,109 +1,118 @@
 import os
+
 from flask import Flask, render_template, request, redirect, url_for, flash
+from sqlalchemy.exc import IntegrityError
 
 from extensions import db
-from services.customer_service import (
-    list_customers, get_customer, create_customer, update_customer, delete_customer
-)
-
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+from db import create_tables
+from services.product_service import ProductService
 
 app = Flask(__name__)
+
+# flash message cần SECRET_KEY
 app.config["SECRET_KEY"] = "dev"
+
+# SQLite tự tạo shop.db trong cùng thư mục exam/
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(BASE_DIR, "shop.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
-with app.app_context():# tạo bảng tự động , 
-    db.create_all()
+# tạo bảng tự động
+with app.app_context():
+    create_tables()
+
+services = ProductService()
 
 
-@app.route("/")# thêm list và search
+@app.route("/")
 def home():
-    return redirect(url_for("customers"))
+    return redirect(url_for("products"))
 
 
-@app.route("/customers")
-def customers():
-    kw = request.args.get("kw", "").strip()
-    customers = list_customers(kw)
-    return render_template("customers.html", customers=customers, kw=kw)
+# danh sách + tìm kiếm theo tên hoặc mã
+@app.route("/products")
+def products():
+    q = (request.args.get("q") or "").strip()
+    items = services.get_all(q=q if q else None)
+    return render_template("products.html", items=items, q=q)
 
-@app.route("/customers/add", methods=["GET", "POST"])# thêm thông tin về khách hàng 
-def customer_add():
+
+# thêm sản phẩm
+@app.route("/products/add", methods=["GET", "POST"])
+def add_product():
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        phone = request.form.get("phone", "").strip()
-        address = request.form.get("address", "").strip()
-        total_spent_raw = request.form.get("total_spent", "0").strip()
-        customer_type = request.form.get("customer_type", "regular").strip()
+        # validate cơ bản
+        name = (request.form.get("name") or "").strip()
+        code = (request.form.get("code") or "").strip()
+        unit = (request.form.get("unit") or "").strip()
+        imported_date = (request.form.get("imported_date") or "").strip()
 
-        if not name:
-            flash("tên không được để trống", "danger")
-            return render_template("customer_form.html", mode="add", customer=None)
-
-        if not phone.isdigit():
-            flash("SĐT phải là số", "danger")
-            return render_template("customer_form.html", mode="add", customer=None)
+        if not name or not code or not unit or not imported_date:
+            flash("Vui lòng nhập đủ: Tên, Mã, Đơn vị, Ngày nhập.", "danger")
+            return render_template("product_form.html", mode="add", product=None, form=request.form)
 
         try:
-            total_spent = int(total_spent_raw)
-            if total_spent < 0:
-                total_spent = 0
-        except:
-            flash("tổng tiền đã mua phải là số", "danger")
-            return render_template("customer_form.html", mode="add", customer=None)
+            product = services.create_from_form(request.form)
+            services.add(product)
+            flash("Thêm hàng hóa thành công!", "success")
+            return redirect(url_for("products"))
+        except ValueError:
+            db.session.rollback()
+            flash("Giá/Số lượng không hợp lệ.", "danger")
+        except IntegrityError:
+            db.session.rollback()
+            flash("Mã hàng hóa đã tồn tại (bị trùng).", "danger")
 
-        create_customer(name, phone, address, total_spent, customer_type)
-        flash("Thêm khách hàng thành công", "success")
-        return redirect(url_for("customers"))
+        return render_template("product_form.html", mode="add", product=None, form=request.form)
 
-    return render_template("customer_form.html", mode="add", customer=None)
+    return render_template("product_form.html", mode="add", product=None, form={})
 
-@app.route("/customers/<int:cid>/edit", methods=["GET", "POST"]) # phần chỉnh sửa khách hàng 
-def customer_edit(cid):
-    customer = get_customer(cid)
-    if not customer:
-        return "Customer not found", 404
+
+# sửa sản phẩm
+@app.route("/products/<int:pid>/edit", methods=["GET", "POST"])
+def edit_product(pid):
+    product = services.get(pid)
+    if not product:
+        return "Product not found", 404
 
     if request.method == "POST":
-        name = request.form.get("name", "").strip()
-        phone = request.form.get("phone", "").strip()
-        address = request.form.get("address", "").strip()
-        total_spent_raw = request.form.get("total_spent", "0").strip()
+        name = (request.form.get("name") or "").strip()
+        code = (request.form.get("code") or "").strip()
+        unit = (request.form.get("unit") or "").strip()
+        imported_date = (request.form.get("imported_date") or "").strip()
 
-        if not name:
-            flash("tên không được để trống", "danger")
-            return render_template("customer_form.html", mode="edit", customer=customer)
-
-        if not phone.isdigit():
-            flash("SĐT phải là số", "danger")
-            return render_template("customer_form.html", mode="edit", customer=customer)
+        if not name or not code or not unit or not imported_date:
+            flash("Vui lòng nhập đủ: Tên, Mã, Đơn vị, Ngày nhập.", "danger")
+            return render_template("product_form.html", mode="edit", product=product, form=request.form)
 
         try:
-            total_spent = int(total_spent_raw)
-            if total_spent < 0:
-                total_spent = 0
-        except:
-            flash("tổng tiền đã mua phải là số", "danger")
-            return render_template("customer_form.html", mode="edit", customer=customer)
+            services.update_from_form(product, request.form)
+            flash("Cập nhật hàng hóa thành công!", "success")
+            return redirect(url_for("products"))
+        except ValueError:
+            db.session.rollback()
+            flash("Giá/Số lượng không hợp lệ.", "danger")
+        except IntegrityError:
+            db.session.rollback()
+            flash("Mã hàng hóa bị trùng.", "danger")
 
-        update_customer(customer, name, phone, address, total_spent)
-        flash("cập nhật khách hàng thành công", "success")
-        return redirect(url_for("customers"))
+        return render_template("product_form.html", mode="edit", product=product, form=request.form)
 
-    return render_template("customer_form.html", mode="edit", customer=customer)
+    return render_template("product_form.html", mode="edit", product=product, form={})
 
-@app.route("/customers/<int:cid>/delete", methods=["POST"])# xóa khách hàng khỏi danh sách 
-def customer_delete(cid):
-    customer = get_customer(cid)
-    if not customer:
-        return "Customer not found", 404
 
-    delete_customer(customer)
-    flash("đã xóa khách hàng", "success")
-    return redirect(url_for("customers"))
+# xóa sản phẩm
+@app.route("/products/<int:pid>/delete", methods=["POST"])
+def delete_product(pid):
+    product = services.get(pid)
+    if not product:
+        return "Product not found", 404
+
+    services.delete(product)
+    flash("Đã xóa hàng hóa.", "success")
+    return redirect(url_for("products"))
 
 
 if __name__ == "__main__":
