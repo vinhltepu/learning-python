@@ -230,7 +230,7 @@ Làm tương tự với các dịch vụ khác như CustomerService, InvoiceServ
             return ok
 
         except sqlite3.IntegrityError:
-            # Ví dụ trùng code (UNIQUE)
+            
             conn.rollback()
             conn.close()
             return False
