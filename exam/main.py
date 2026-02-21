@@ -114,6 +114,55 @@ def delete_product(pid):
     flash("Đã xóa hàng hóa.", "success")
     return redirect(url_for("products"))
 
+@app.route("/invoices")
+def invoices():
+    rows = invoice_services.get_all()
+    return render_template("invoices.html", invoices=rows)
 
+
+@app.route("/invoices/new", methods=["GET", "POST"])
+def new_invoice():
+    # lấy danh sách customer + products để render form
+    conn = connect()
+    cur = conn.cursor()
+    cur.execute("SELECT id, name, phone, total_spent, customer_type FROM customers ORDER BY id DESC")
+    customers = cur.fetchall()
+
+    cur.execute("SELECT id, name, code, sell_price, stock FROM products ORDER BY id DESC")
+    products = cur.fetchall()
+    conn.close()
+
+    if request.method == "POST":
+        try:
+            customer_id = int(request.form.get("customer_id"))
+        except:
+            customer_id = 0
+        cart = {}
+        for p in products:
+            pid = p["id"] if "id" in p.keys() else p[0]
+            qty_raw = request.form.get(f"qty_{pid}", "0")
+            try:
+                qty = int(qty_raw)
+            except:
+                qty = 0
+            if qty > 0:
+                cart[pid] = qty
+
+        try:
+            invoice_id = invoice_services.create_invoice(customer_id, cart)
+            flash(f"Tạo hóa đơn thành công! Mã hóa đơn: {invoice_id}", "success")
+            return redirect(url_for("invoice_detail", invoice_id=invoice_id))
+        except ValueError as e:
+            flash(str(e), "danger")
+
+    return render_template("invoice_form.html", customers=customers, products=products)
+
+
+@app.route("/invoices/<int:invoice_id>")
+def invoice_detail(invoice_id):
+    invoice, items = invoice_services.get_detail(invoice_id)
+    if not invoice:
+        return "Invoice not found", 404
+    return render_template("invoice_detail.html", invoice=invoice, items=items)
 if __name__ == "__main__":
     app.run(debug=True)
