@@ -1,1 +1,7 @@
-
+body { font-family: Arial, sans-serif; margin: 16px; }
+nav { margin-bottom: 12px; }
+nav a { margin-right: 8px; }
+.flash { list-style: none; padding: 0; }
+.flash li { margin: 6px 0; padding: 8px; background: #eee; }
+.flash li.success { background: #d4edda; }
+.flash li.danger { background: #f8d7da; }

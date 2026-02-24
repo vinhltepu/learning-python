@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>Tạo hóa đơn</h2>
+
+<form method="post">
+  <div>
+    <label>Chọn khách hàng</label>
+    <select name="customer_id">
+      {% for c in customers %}
+      <option value="{{c.id}}">{{c.name}} - {{c.phone}} ({{c.customer_type}})</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <h3>Chọn sản phẩm (nhập số lượng)</h3>
+  <table border="1" cellpadding="6" cellspacing="0">
+    <tr>
+      <th>ID</th><th>Name</th><th>Code</th><th>Price</th><th>Stock</th><th>Qty</th>
+    </tr>
+    {% for p in products %}
+    <tr>
+      <td>{{p.id}}</td>
+      <td>{{p.name}}</td>
+      <td>{{p.code}}</td>
+      <td>{{p.sell_price}}</td>
+      <td>{{p.stock}}</td>
+      <td><input name="qty_{{p.id}}" value="0" style="width:80px"></td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <button type="submit">Tạo hóa đơn</button>
+</form>
+
+{% endblock %}
