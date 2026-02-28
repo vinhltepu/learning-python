@@ -136,3 +136,54 @@ def product_from_row(row):
         paint_brand=row.get("paint_brand"),
         wood_source=row.get("wood_source")
     )
+class PaintingProduct(Product):
+    """Sản phẩm sơn: có thêm tên hãng sơn (paint_brand)."""
+    def __init__(self, *args, paint_brand=None, **kwargs):
+        # ép product_type về "painting"
+        kwargs.pop("product_type", None)
+        super().__init__(*args, product_type="painting", **kwargs)
+        self.paint_brand = paint_brand
+
+    def extra_info(self):
+        return f"Hãng sơn: {self.paint_brand or ''}"
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["paint_brand"] = self.paint_brand
+        return data
+
+
+class WoodProduct(Product):
+    """Sản phẩm gỗ: có thêm nguồn nhập hàng (wood_source)."""
+    def __init__(self, *args, wood_source=None, **kwargs):
+        kwargs.pop("product_type", None)
+        super().__init__(*args, product_type="wood", **kwargs)
+        self.wood_source = wood_source
+
+    def extra_info(self):
+        return f"Nguồn gỗ: {self.wood_source or ''}"
+
+    def to_dict(self):
+        data = super().to_dict()
+        data["wood_source"] = self.wood_source
+        return data
+
+
+class BulkProduct(Product):
+    """Minh hoạ: sản phẩm bán sỉ (không cần cột DB riêng)."""
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("product_type", None)
+        super().__init__(*args, product_type="bulk", **kwargs)
+
+    def extra_info(self):
+        return "Loại: Bán sỉ"
+
+
+class ClearanceProduct(Product):
+    """Minh hoạ: sản phẩm xả kho (không cần cột DB riêng)."""
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("product_type", None)
+        super().__init__(*args, product_type="clearance", **kwargs)
+
+    def extra_info(self):
+        return "Loại: Xả kho"

@@ -135,3 +135,113 @@ Viết thêm các phương thức khác như update, delete để cập nhật/x
 
 Làm tương tự với các dịch vụ khác như CustomerService, InvoiceService
 """
+   
+
+    def _row_to_product(self, row):
+        base_kwargs = {
+            "id": row["id"],
+            "name": row["name"],
+            "code": row["code"],
+            "unit": row["unit"],
+            "import_price": row["import_price"],
+            "sell_price": row["sell_price"],
+            "stock": row["stock"],
+            "imported_date": row["imported_date"],
+            "product_type": row["product_type"],
+        }
+
+        ptype = row["product_type"] or "base"
+        if ptype == "painting":
+            return PaintingProduct(**base_kwargs, paint_brand=row["paint_brand"])
+        elif ptype == "wood":
+            return WoodProduct(**base_kwargs, wood_source=row["wood_source"])
+        elif ptype == "tool":
+            return ToolProduct(**base_kwargs, tool_brand=row["tool_brand"])
+        else:
+            return Product(**base_kwargs)
+
+    def get_by_id(self, pid: int):
+        """Lấy 1 sản phẩm theo id"""
+        conn = connect()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT id, name, code, unit, import_price, sell_price,
+                   stock, imported_date, product_type, paint_brand, wood_source
+            FROM products
+            WHERE id = ?
+        """, (pid,))
+        row = cur.fetchone()
+        conn.close()
+
+        if row is None:
+            return None
+        return self._row_to_product(row)
+
+    def update(self, product: Product):
+        """
+        Cập nhật sản phẩm theo product.id
+        Trả về True nếu update được, False nếu không.
+        """
+        conn = connect()
+        cur = conn.cursor()
+
+        try:
+            if isinstance(product, PaintingProduct):
+                cur.execute("""
+                    UPDATE products
+                    SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?,
+                        product_type='painting', paint_brand=?, wood_source=NULL
+                    WHERE id=?
+                """, (
+                    product.name, product.code, product.unit,
+                    product.import_price, product.sell_price, product.stock, product.imported_date,
+                    product.paint_brand, product.id
+                ))
+
+            elif isinstance(product, WoodProduct):
+                cur.execute("""
+                    UPDATE products
+                    SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?,
+                        product_type='wood', wood_source=?, paint_brand=NULL
+                    WHERE id=?
+                """, (
+                    product.name, product.code, product.unit,
+                    product.import_price, product.sell_price, product.stock, product.imported_date,
+                    product.wood_source, product.id
+                ))
+
+            else:
+                cur.execute("""
+                    UPDATE products
+                    SET name=?, code=?, unit=?, import_price=?, sell_price=?, stock=?, imported_date=?,
+                        product_type='base', paint_brand=NULL, wood_source=NULL
+                    WHERE id=?
+                """, (
+                    product.name, product.code, product.unit,
+                    product.import_price, product.sell_price, product.stock, product.imported_date,
+                    product.id
+                ))
+
+            conn.commit()
+            ok = (cur.rowcount > 0)
+            conn.close()
+            return ok
+
+        except sqlite3.IntegrityError:
+            
+            conn.rollback()
+            conn.close()
+            return False
+
+    def delete(self, pid: int):
+        """Xóa sản phẩm theo id. Trả về True nếu xóa được."""
+        conn = connect()
+        cur = conn.cursor()
+
+        cur.execute("DELETE FROM products WHERE id = ?", (pid,))
+        conn.commit()
+        ok = (cur.rowcount > 0)
+        conn.close()
+        return ok
