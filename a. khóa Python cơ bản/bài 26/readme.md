@@ -66,3 +66,47 @@ def test() :
     print ( 'xin chao ')
 demo = (decorator_func(test))
 demo ( )
+
+# decoratỏ lồng nhau 
+khi sử dụng nhiều deccorator cho một hàm , bạn có thể áp dụng chúng theo thứ tự từ ngoài vào trong 
+
+cách sử dụng : 
+nếu bạn có nhiều decorator , python sẽ áp dụng theo thứ tự từ dưới lên ( tức là decorator cuối cùng được áp dụng đầu tiên )
+
+def decorator_1(func):
+
+    def wrap():
+        print('Hàm decorator 1 đang chạy')
+        func()
+        print('Hàm decorator 1 kết thúc ')
+
+    return wrap
+
+def decorator_2(func):
+
+    def wrap():
+        print('Hàm decorator 2 đang chạy')
+        func()
+        print('Hàm decorator 2 kết thúc ')
+
+    return wrap
+
+def demo ()
+    print ( ' hàm demo sẽ được trang trí ')
+
+test =decorator_2(decorator_1(demo)) // chạy sẽ là hàm 2 chạy - hàm 1 chạy - demo - hàm 1 kết thúc - hàm 2 kết thúc 
+
+# truyền tham số cho decorator 
+def decorator_func(func):
+
+    def wrap():
+        print('wrap đang chạy ')
+        func()
+        print('wrap kết thúc  ')
+def demo () :
+    print ( ' đang học decorator')
+
+test = decorator_func(demo)
+
+test ( )
+
