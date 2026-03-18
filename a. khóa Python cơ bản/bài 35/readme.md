@@ -56,3 +56,28 @@ print(type(data_python['name']))
 data_json = json.dumps(data_python, ensure_ascii=False)
 
 print(data_json)
+
+# Đọc dữ liệu json từ 1 file lên chương trình python
+with open('users.json', encoding='utf-8') as file:
+    data_json = json.load(file)
+
+print(data_json)
+# Muốn in name, email, city của tất cả các users có trong list
+# Lấy name ra trước
+for user in data_json:
+    print(f"Username: {user['name']}")
+    print(f"Email: {user['email']}")
+    print(f"City: {user['address']['city']}")
+    print()
+# Tạo dữ liệu:
+
+data.append({
+    "Username": user['name'],
+    "Email": user['email'],
+    "City": user['address']['city']
+})
+
+# Muốn in dữ liệu json ra 1 file
+
+with open('new_users.json', 'w', encoding='utf-8') as write_file:
+    json.dump(obj=)
