@@ -28,14 +28,14 @@ c = conn.cursor() # để thực thi các câu lệnh sqlite
 # BLOB. Giá trị là một khối dữ liệu nhị phân, được lưu trữ đúng như dữ liệu đầu vào.
 # NULL. The value is a NULL value.
 
-# sql: str = """
-#CREATE TABLE users(
-#    username TEXT,
-#    password TEXT,
-#    address TEXT,
-#    age REAL
-#)
-#"""
+sql: str = """
+CREATE TABLE users(
+   username TEXT,
+   password TEXT,
+   address TEXT,
+   age REAL
+)
+"""
 
 
 
@@ -125,7 +125,7 @@ c = conn.cursor() # để thực thi các câu lệnh sqlite
 
 
 
-# c.execute('SELECT * FROM users WHERE id = :id', {"id": 1})
+c.execute('SELECT * FROM users WHERE id = :id', {"id": 1})
 
 def create_user(user: User):
     c.execute("""
