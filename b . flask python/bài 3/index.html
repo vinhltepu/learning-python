@@ -1,0 +1,71 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Index page</h1>
+    <p>Welcome to my Tâm</p>
+    <p>1 + 1 = {{ 1 + 5 }}</p>
+    <p>Kết quả thực thi của hàm trang chu là {{ trangchu(5) }}</p>
+    <p>sau khi thực thi hàm test vối cú pháp janja2 ta được : {{ test() }}</p>
+</body>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+         My Website
+        {% endblock %}  
+
+    </title>
+</head>
+<body>
+    <h1>Index page</h1>
+    <p>Welcome to my Index page</p>
+
+
+    <!-- <p> all products : {{ product_lists }}</p> -->
+
+
+
+    <!-- {% for product in product_lists %} dung vong lap for de hien thi tung san pham trong product_lists <br>
+    {{ product.name }} <br>
+    {{ product.price }} <br>
+    {{ product.description }} <br>
+    ============================== <br>
+    {% endfor %} 
+
+    {% if product.price == 20000 %}
+    TEST CÂU LỆNH IF
+    {% endif %}
+
+    {% endfor %} -->
+
+
+  
+    {% block content %}
+       đây là nội dung của page nha 
+    {% endblock %} 
+
+    
+
+    {{'ahihi'|trangchu(3) }} <br>
+
+
+    <!-- pipe -->
+    <!-- Quá trình: khi customer click thẻ a trong trình duyệt => request tới server và sever sẽ phản hồi lại  -->
+
+    <a href="https://facebook.com">Home</a>
+    <a href="/contact">Contact</a>
+    <a href="/login">Login</a> 
+    <a href="{{ url_for('home') }}">Home</a>
+</body>
+</html>
