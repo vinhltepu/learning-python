@@ -77,7 +77,7 @@ if __name__ == '__main__':
 # Tạo route /news1 hiển thị tin tức số 1.
 # Tạo route /news2 hiển thị tin tức số 2.
 # Tạo route /news3 hiển thị tin tức số 3.
-# Tạo route /author hiển thị thông tin tác giả.
+# Tạo route /author hiển thị thông tin tác giả
 
 from flask import Flask
 
