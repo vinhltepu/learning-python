@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- <a href="">Home Page</a> -->
+    <!-- thẻ a khi click vào sẽ tự động gửi requesst tới sever method get  -->
+     <h1>login</h1>
+    <!-- mặc định thẻ form sẽ gửi requesst với method get tới sever  -->
+    <form action="" method="post">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+    <h1>phía sevver đã nhận được dự liệu phản hồi từ phía client</h1>
+    <p>Username: {{ username }}</p>
+    <p>Password: {{ password }}</p>
+</body>
+</html>
