@@ -10,7 +10,22 @@
     <!-- thẻ a khi click vào sẽ tự động gửi requesst tới sever method get  -->
      <h1>login</h1>
     <!-- mặc định thẻ form sẽ gửi requesst với method get tới sever  -->
-    <form action="" method="post">
+    <!-- khi ấn vào sumbit button nó sẽ tự tạo 1 cái request tới sever  -->
+    
+    <!-- Các Loại content-type chính:
+    text/*: Ví dụ: text/html, text/css, text/plain => dữ liệu văn bản thuần túy hoặc html
+    application/*: Ví dụ: application/json, application/xml, application/pdf => dữ liệu ứng dụng json, xml, pdf
+    multipart/* Ví dụ: multipart/form-data, multipart/mixed, multipart/related => gửi nhiều phần dữ liệu (file, form, email)
+    image/* Ví dụ: image/png, image/webp, image/jpeg => dữ liệu hình ảnh
+    audio/* Ví dụ: audio/mp3, audio/ogg, => dữ liệu âm thanh
+    video/* Ví dụ: video/mp4, video/webm => dữ liệu video
+    font/* Ví dụ: font/woff, font/woff2 => dữ liệu font
+    model/* Ví dụ: model/gltf+json => dữ liệu mô hình 3D -->
+
+
+
+
+    <!-- <form action="{{ url_for('login') }}" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -21,6 +36,19 @@
     </form>
     <h1>phía sevver đã nhận được dự liệu phản hồi từ phía client</h1>
     <p>Username: {{ username }}</p>
-    <p>Password: {{ password }}</p>
+    <p>Password: {{ password }}</p> -->
+    <form action="{{ url_for('login') }}" method="post" enctype="multipart/form-data">
+        <label for="">User name</label>
+        <input type="text" name="username" required placeholder="Tài khoản" > <br><br>
+
+        <label for="">Password</label>
+        <input type="password" name="password" required placeholder="Mật khẩu"> <br><br>
+
+        <label for="">Avatar</label>
+        <input type="file" name="file" required accept="image/png, image/jpeg" > <br><br>
+
+        <button type="submit">Login</button>
+    </form>
+
 </body>
 </html>
