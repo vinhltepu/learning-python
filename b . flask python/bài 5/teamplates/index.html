@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lession5</title>
+
+
+    <!-- <link rel="stylesheet" href="static/styles.css"> link của file css trong thư mục static -->
+
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+   <link rel = shortcut icon href = "static/favicon.ico" type = "image/x-icon">
+
+
+
+
+    <!-- <style>
+        <body>
+           ::-ms-backdrop
+              {
+                 background-color: rgb(218, 30, 30);
+                } 
+        </body> -->
+</head>
+<body>
+    <h1>watching the video</h1>
+    <video src="static/video.mp4" controls height="500" width="500"></video> 
+
+    <h2>đây là tệp âm thanh </h2>
+    <audio src="static/audio.mp3" controls></audio>
+
+    <h3>bức ảnh mô  phỏng mvt</h3>
+    <img src="{{ url_for('static', filename='MVT.png') }}" alt="đây là hình ảnh MVT">  
+
+    <button class="btn">click here</button>
+    <button class="btn btn-default">Choose</button>
+    <button class="btn btn-primary">Demo</button>
+
+
+     <!-- src là nguồn , alt là văn bản thay thế nếu hình ảnh không hiển thị được  -->
+
+    <!-- clien gửi request đến sever 
+    header 
+    host : 192.168.0.102.3333
+
+    sever nhận request và xử lý 
+    sever sẽ response về client
+    header :
+    content-type : text/html ; charset=utf-8
+    content-disposition : inline ; filename="MVT.png"
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        
+    </body>
+    </html> -->
+    <!-- imd sẽ tự động gửi 1 cái request phụ đến sever 
+    sever response về client với header content-type là image/png và content-disposition là inline ; filename="MVT.png" -->
+</body>
+</html>
