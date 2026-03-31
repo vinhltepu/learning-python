@@ -8,5 +8,20 @@
 <body>
     <h1>bạn đã đăng nhập thành công</h1>
     <a href="{{ url_for('login') }}">bạn muốn trở về trang đăng nhập không </a>
+    <br>
+    <!-- <a href="{{ url_for('delete_session') }}">bạn muốn xóa session không </a>
+    <br> -->
+    <a href="{{ url_for('create_cookie') }}"> tạo cookie    </a>
+    <br>
+    <a href="{{ url_for('get_cookie') }}"> lấy cookie    </a>
+    <br>
+    <a href="{{ url_for('delete_cookie') }}"> xóa cookie    </a>
+    <br>
+    <a href="{{ url_for('get_flash') }}"> lấy flash    </a>
+
+    <h2>lấy dữ liệu trong flash (session)</h2>
+
+    get_flashed_messages() : {{ get_flashed_messages() }}
+
 </body>
 </html>
