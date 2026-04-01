@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from blueprints.user.routes import user_bp # import blueprint user từ file routes.py trong thư mục user
 from blueprints.admin.routes import admin_bp # import blueprint admin từ file routes.py trong thư mục admin
  
@@ -9,7 +9,7 @@ app.register_blueprint(admin_bp) # đăng ký blueprint admin vào app chính
 
 @app.route('/')
 def index():
-    return '<h1>Xin chào các bạn</h1>'
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=8888) 
