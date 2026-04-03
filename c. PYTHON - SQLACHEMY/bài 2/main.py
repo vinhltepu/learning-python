@@ -22,3 +22,9 @@ for product in products: # Duyệt qua từng sản phẩm trong danh sách prod
 products[0].price = 1400.0 # Cập nhật giá của sản phẩm đầu tiên trong danh sách 
 products[1].name = "Smartphone Pro" # Cập nhật tên của sản phẩm thứ hai trong danh sách
 session.commit() 
+
+
+# delete dữ liệu
+session.delete(products[0]) # Xóa sản phẩm đầu tiên trong danh sách products khỏi session
+session.delete(products[1]) # Xóa sản phẩm thứ hai trong danh sách products khỏi session
+session.commit() 
