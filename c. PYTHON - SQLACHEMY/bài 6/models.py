@@ -12,7 +12,7 @@ engine = create_engine(url)
 
 Base = declarative_base()  # class
 
-class Product(Base):
+class Product(Base): 
     __tablename__ = "products"
     id = Column(name="id", type_=Integer, primary_key=True)
     name = Column(name="product_name", type_=String(50))

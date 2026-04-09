@@ -26,5 +26,6 @@ class Post(Base):
     id = Column(name="id", type_=Integer, primary_key=True)
     title = Column(name="post_title", type_=String(100))
     content = Column(name="post_content", type_=String(500))    
-    User_id = Column(name="user_id", type_=Integer).append_foreign_key(ForeignKey("users.id")) # Liên kết với bảng users thông qua khóa ngoại user_id   
-Base.metadata.create_all(engine) 
+  
+    def __repr__(self) -> str:
+        return f"Post(id={self.id}, title='{self.title}', content='{self.content}', user_id={self.user_id})"
