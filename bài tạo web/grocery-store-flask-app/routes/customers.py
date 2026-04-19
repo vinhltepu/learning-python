@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash 
 from app import db
 from models.customers import Customer, RegularCustomer, VIPCustomer
 
@@ -63,3 +63,38 @@ def add_customer():
 
     flash("Thêm khách hàng thành công", "success")
     return redirect(url_for("customers.list_customers"))
+
+@Customers_bp.route("/customers/edit/<int:id>", methods=["POST"])
+def edit_customer(id):
+    customer = Customer.query.get_or_404(id) # lấy khách hàng theo id, nếu không tìm thấy sẽ trả về lỗi 404
+
+    name = request.form.get("name")
+    phone = request.form.get("phone")
+    address = request.form.get("address")
+    total_spent = request.form.get("total_spent")
+
+    if total_spent == "":
+        total_spent = 0
+    else:
+        total_spent = float(total_spent)
+
+    customer.name = name
+    customer.phone = phone
+    customer.address = address
+    customer.total_spent = total_spent
+
+    db.session.commit()
+    flash("Cập nhật khách hàng thành công", "success")
+    return redirect(url_for("customers.list_customers"))
+
+
+@Customers_bp.route("/customers/delete/<int:id>", methods=["POST"])
+def delete_customer(id):
+    customer = Customer.query.get_or_404(id) # lấy khách hàng theo id, nếu không tìm thấy sẽ trả về lỗi 404
+
+    db.session.delete(customer)
+    db.session.commit()
+
+    flash("Xóa khách hàng thành công", "success")
+    return redirect(url_for("customers.list_customers"))
+
