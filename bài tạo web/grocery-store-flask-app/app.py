@@ -1,15 +1,13 @@
-from flask import Flask # import Flask để tạo ứng dụng web
-from routes.goods import goods_bp # import blueprint cho routes liên quan đến hàng hóa
-from routes.customers import customers_bp # import blueprint cho routes liên quan đến khách hàng
-from routes.invoices import invoices_bp # import blueprint cho routes liên quan đến hóa đơn 
-from config import Config # import cấu hình từ file config.py
-from flask_sqlalchemy import SQLAlchemy # import SQLAlchemy để tương tác với cơ sở dữ liệu
+from flask import Flask, render_template
+from routes.goods import goods_bp
+from routes.customers import customers_bp
+from routes.invoices import invoices_bp
+from config import Config
+from flask_sqlalchemy import SQLAlchemy
 
-
-
-app =Flask(__name__)
-app.config.from_object(Config) # tải cấu hình từ class Config trong file config.py
-db = SQLAlchemy(app) # khởi tạo SQLAlchemy với ứng dụng Flask
+app = Flask(__name__)
+app.config.from_object(Config)
+db = SQLAlchemy(app)
 
 
 # đăng ký các blueprint với ứng dụng chính 
@@ -20,7 +18,7 @@ app.register_blueprint(invoices_bp, url_prefix='/invoices')
 # route cơ bản để kiểm tra ứng dụng hoạt động
 @app.route('/')
 def index():
-    return "Welcome to Quang Thuy Grocery Store "
+    return render_template('index.html')
 
 if __name__ == '__main__':
     with app.app_context(): 

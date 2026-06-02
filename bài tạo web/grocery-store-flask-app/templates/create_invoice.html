@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Tạo hóa đơn mới{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <div class="form-row">
+      <label>
+        Khách hàng
+        <select name="customer_id" required>
+          <option value="">Chọn khách hàng</option>
+          {% for customer in customers %}
+            <option value="{{ customer.id }}">{{ customer.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+
+    <p class="small-text">Nhập số lượng cho mỗi sản phẩm muốn bán. Để trống nếu không chọn sản phẩm đó.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Sản phẩm</th>
+          <th>Giá bán</th>
+          <th>Tồn kho</th>
+          <th>Số lượng</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ '{:,.0f}'.format(product.sale_price) }} đ</td>
+            <td>{{ product.stock }}</td>
+            <td>
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+              <input type="number" name="quantity" min="0" max="{{ product.stock }}" value="0">
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="submit">Tạo hóa đơn</button>
+  </form>
+{% endblock %}

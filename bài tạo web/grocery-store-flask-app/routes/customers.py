@@ -1,30 +1,29 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash 
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app import db
 from models.customers import Customer, RegularCustomer, VIPCustomer
 
-Customers_bp = Blueprint('customers', __name__) 
+customers_bp = Blueprint('customers', __name__)
 
-@Customers_bp.route("/customers") # định nghĩa route để hiển thị danh sách khách hàng
+@customers_bp.route("/")
 def list_customers():
-    keyword = request.args.get("keyword", "") # lấy từ khóa tìm kiếm từ tham số truy vấn 
-    keyword = keyword.strip() # loại bỏ khoảng trắng ở đầu và cuối từ khóa
+    keyword = request.args.get("keyword", "").strip()
 
-    if keyword != "":# nếu có từ khóa, thực hiện truy vấn tìm kiếm khách hàng theo tên hoặc số điện thoại
-        customers = Customer.query.filter(# tìm kiếm khách hàng theo tên hoặc số điện thoại chứa từ khóa
+    if keyword:
+        customers = Customer.query.filter(
             (Customer.name.contains(keyword)) |
             (Customer.phone.contains(keyword))
         ).all()
     else:
-        customers = Customer.query.all()# nếu không có từ khóa, lấy tất cả khách hàng
+        customers = Customer.query.all()
 
     return render_template(
-        "customers.html",# hiển thị danh sách khách hàng và từ khóa tìm kiếm trên trang customers.html
-        customers=customers,# truyền danh sách khách hàng vào template để hiển thịn
-        keyword=keyword # truyền từ khóa tìm kiếm vào template để hiển thị trong ô tìm kiếm
+        "customers.html",
+        customers=customers,
+        keyword=keyword
     )
-    
-    
-@Customers_bp.route("/customers/add", methods=["POST"]) # định nghĩa route để thêm khách hàng mới, chỉ chấp nhận phương thức POST
+
+
+@customers_bp.route("/add", methods=["POST"])
 def add_customer():
     customer_type = request.form.get("customer_type")
     name = request.form.get("name")
@@ -32,18 +31,21 @@ def add_customer():
     address = request.form.get("address")
     total_spent = request.form.get("total_spent")
 
-    if total_spent == "": # nếu trường tổng chi tiêu để trống, gán giá trị mặc định là 0
-        total_spent = 0# nếu trường tổng chi tiêu không phải là số hợp lệ, gán giá trị mặc định là 0
+    if total_spent == "":
+        total_spent = 0
     else:
-        total_spent = float(total_spent)# chuyển đổi giá trị tổng chi tiêu sang kiểu float, nếu có lỗi sẽ gán giá trị mặc định là 0
-        if total_spent < 0: # nếu tổng chi tiêu là số âm, gán giá trị mặc định là 0
-            total_spent = 0# kiểm tra tính hợp lệ của số điện thoại, nếu không hợp lệ sẽ hiển thị thông báo lỗi và chuyển hướng về trang danh sách khách hàng
+        try:
+            total_spent = float(total_spent)
+        except ValueError:
+            total_spent = 0
+        if total_spent < 0:
+            total_spent = 0
 
-    if Customer.is_valid_phone(phone) == False: # kiểm tra tính hợp lệ của số điện thoại, nếu không hợp lệ sẽ hiển thị thông báo lỗi và chuyển hướng về trang danh sách khách hàng
+    if not Customer.is_valid_phone(phone):
         flash("Số điện thoại không hợp lệ", "danger")
         return redirect(url_for("customers.list_customers"))
 
-    if customer_type == "vip": # nếu loại khách hàng là VIP, tạo đối tượng VIPCustomer, ngược lại tạo đối tượng RegularCustomer và lưu vào cơ sở dữ liệu
+    if customer_type == "vip":
         customer = VIPCustomer(
             name=name,
             phone=phone,
@@ -64,33 +66,40 @@ def add_customer():
     flash("Thêm khách hàng thành công", "success")
     return redirect(url_for("customers.list_customers"))
 
-@Customers_bp.route("/customers/edit/<int:id>", methods=["POST"])
+
+@customers_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_customer(id):
-    customer = Customer.query.get_or_404(id) # lấy khách hàng theo id, nếu không tìm thấy sẽ trả về lỗi 404
+    customer = Customer.query.get_or_404(id)
 
-    name = request.form.get("name")
-    phone = request.form.get("phone")
-    address = request.form.get("address")
-    total_spent = request.form.get("total_spent")
+    if request.method == "POST":
+        name = request.form.get("name")
+        phone = request.form.get("phone")
+        address = request.form.get("address")
+        total_spent = request.form.get("total_spent")
 
-    if total_spent == "":
-        total_spent = 0
-    else:
-        total_spent = float(total_spent)
+        if total_spent == "":
+            total_spent = 0
+        else:
+            try:
+                total_spent = float(total_spent)
+            except ValueError:
+                total_spent = 0
 
-    customer.name = name
-    customer.phone = phone
-    customer.address = address
-    customer.total_spent = total_spent
+        customer.name = name
+        customer.phone = phone
+        customer.address = address
+        customer.total_spent = total_spent
 
-    db.session.commit()
-    flash("Cập nhật khách hàng thành công", "success")
-    return redirect(url_for("customers.list_customers"))
+        db.session.commit()
+        flash("Cập nhật khách hàng thành công", "success")
+        return redirect(url_for("customers.list_customers"))
+
+    return render_template("edit_customer.html", customer=customer)
 
 
-@Customers_bp.route("/customers/delete/<int:id>", methods=["POST"])
+@customers_bp.route("/delete/<int:id>", methods=["POST"])
 def delete_customer(id):
-    customer = Customer.query.get_or_404(id) # lấy khách hàng theo id, nếu không tìm thấy sẽ trả về lỗi 404
+    customer = Customer.query.get_or_404(id)
 
     db.session.delete(customer)
     db.session.commit()

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Danh sách hóa đơn{% endblock %}
+
+{% block content %}
+  <p><a class="button" href="{{ url_for('invoices.create_invoice') }}">Tạo hóa đơn mới</a></p>
+
+  <form method="get" class="form-row">
+    <label>
+      Khách hàng
+      <select name="customer_id">
+        <option value="">Tất cả</option>
+        {% for customer in customers %}
+          <option value="{{ customer.id }}" {% if customer.id == selected_customer %}selected{% endif %}>{{ customer.name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Ngày
+      <input type="date" name="created_at" value="{{ selected_date or '' }}">
+    </label>
+    <button type="submit">Lọc</button>
+  </form>
+
+  {% if invoices %}
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Khách hàng</th>
+          <th>Ngày</th>
+          <th>Tổng</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for invoice in invoices %}
+          <tr>
+            <td>{{ invoice.id }}</td>
+            <td>{{ invoice.customer.name }}</td>
+            <td>{{ invoice.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ '{:,.0f}'.format(invoice.total_amount) }} đ</td>
+            <td>
+              <a class="button" href="{{ url_for('invoices.invoice_detail', invoice_id=invoice.id) }}">Xem</a>
+              <form action="{{ url_for('invoices.delete_invoice', invoice_id=invoice.id) }}" method="post" style="display:inline;">
+                <button type="submit" style="background:#d32f2f;">Xóa</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Chưa có hóa đơn nào.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Quang Thuy Grocery Store{% endblock %}
+
+{% block content %}
+  <p>Chào mừng bạn đến với ứng dụng quản lý cửa hàng tạp hóa Quang Thúy.</p>
+  <p>Sử dụng menu để duyệt danh sách hàng hóa, khách hàng và hóa đơn.</p>
+  <ul>
+    <li><a href="{{ url_for('goods.list_goods') }}">Quản lý hàng hóa</a></li>
+    <li><a href="{{ url_for('customers.list_customers') }}">Quản lý khách hàng</a></li>
+    <li><a href="{{ url_for('invoices.list_invoices') }}">Quản lý hóa đơn</a></li>
+  </ul>
+{% endblock %}

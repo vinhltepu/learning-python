@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Sửa hàng hóa{% endblock %}
+
+{% block content %}
+  <h2>Sửa hàng hóa</h2>
+  <form method="post">
+    <div class="form-row">
+      <label>
+        Tên
+        <input type="text" name="name" value="{{ product.name }}" required>
+      </label>
+      <label>
+        Mã
+        <input type="text" name="code" value="{{ product.code }}" required>
+      </label>
+      <label>
+        Đơn vị
+        <input type="text" name="unit" value="{{ product.unit }}" required>
+      </label>
+      <label>
+        Giá nhập
+        <input type="number" name="import_price" step="0.01" value="{{ product.import_price }}" required>
+      </label>
+      <label>
+        Giá bán
+        <input type="number" name="sale_price" step="0.01" value="{{ product.sale_price }}" required>
+      </label>
+      <label>
+        Tồn kho
+        <input type="number" name="stock" min="0" value="{{ product.stock }}" required>
+      </label>
+      <label>
+        Ngày nhập
+        <input type="date" name="import_date" value="{{ product.import_date }}" required>
+      </label>
+      {% if product.type == 'painting' %}
+        <label>
+          Hãng sơn
+          <input type="text" name="brand_name" value="{{ product.brand_name }}">
+        </label>
+      {% elif product.type == 'wood' %}
+        <label>
+          Nguồn gỗ
+          <input type="text" name="source" value="{{ product.source }}">
+        </label>
+      {% endif %}
+    </div>
+    <button type="submit">Lưu thay đổi</button>
+    <a class="button" href="{{ url_for('goods.list_goods') }}">Hủy</a>
+  </form>
+{% endblock %}

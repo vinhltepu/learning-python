@@ -1,94 +1,100 @@
 
 from app import db
-# Định nghĩa model Customer cho bảng customers trong cơ sở dữ liệu
-class Customer(db.Model): # class để chế tạo model 
+
+class Customer(db.Model):
     __tablename__ = 'customers'
 
-    id = db.Column(db.Integer, primary_key=True) # cột id là khóa chính
-    type = db.Column(db.String(20), nullable=False) # cột type là chuỗi, có thể là 'individual' hoặc 'business'
-    name = db.Column(db.String(100), nullable=False) # cột name là chuỗi
-    phone = db.Column(db.String(20), nullable=False) # cột phone là chuỗi
-    address = db.Column(db.String(200), nullable=False) # cột address là chuỗi
-    total_spent = db.Column(db.Float, default=0.0) # cột total_spent là số thực, mặc định là 0.0
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(20), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    address = db.Column(db.String(200), nullable=False)
+    total_spent = db.Column(db.Float, default=0.0)
 
     __mapper_args__ = {
-    "polymorphic_identity": "customer", # class gốc là customer
-    "polymorphic_on": type # phân biệt các loại khách hàng dựa trên cột type
-}
+        "polymorphic_identity": "customer",
+        "polymorphic_on": type
+    }
 
-    invoices = db.relationship("Invoice", backref="customer", lazy=True) # hóa đơn và mối liên hệ với khách hàng , 1 khách hàng có thể có nhiều hóa đơn 
+    invoices = db.relationship("Invoice", backref="customer", lazy=True)
 
+    def __init__(self, name, phone, address, total_spent=0):
+        self.name = name
+        self.phone = phone
+        self.address = address
+        self.total_spent = total_spent
 
-def __init__(self, name, phone, address, total_spent=0): # hàm khởi tạo khách hàng mới 
-    self.name = name
-    self.phone = phone
-    self.address = address
-    self.total_spent = total_spent
+    @staticmethod
+    def is_valid_phone(phone):
+        if not phone:
+            return False
+        cleaned = phone.strip()
+        return cleaned.isdigit() and len(cleaned) >= 9
 
-@property
-def customer_name(self): # lấy tên khách hàng từ class customer
-    return self.name  # hiển thị tên khách hàng 
+    @property
+    def customer_name(self):
+        return self.name
 
-@customer_name.setter
-def customer_name(self, value):
-    if value and len(value.strip()) >= 2:# kiểm tra tên khách hàng hợp lệ (ít nhất 2 ký tự)
-        self.name = value.strip()
-    else:
-        raise ValueError("Invalid customer name. Name must be at least 2 characters long.") # đặt tên khách hàng, nếu tên không hợp lệ sẽ trả về lỗi
+    @customer_name.setter
+    def customer_name(self, value):
+        if value and len(value.strip()) >= 2:
+            self.name = value.strip()
+        else:
+            raise ValueError("Invalid customer name. Name must be at least 2 characters long.")
 
-@property
-def points(self): # tính điểm dựa trên chi tiêu 
-        return self.total_spent  # trả về tổng số tiền đã chi
+    @property
+    def points(self):
+        return self.total_spent
 
-@points.setter
-def points(self, new_points): # giá trị mới muốn cập nhật điểm tích lũy
-    if float(new_points) >= 0: # kiểm tra >0 hay k
-        self.total_spent = float(new_points) # cập nhật điểm 
-    else:
-        print("Điểm tích lũy không được âm")
+    @points.setter
+    def points(self, new_points):
+        if float(new_points) >= 0:
+            self.total_spent = float(new_points)
+        else:
+            raise ValueError("Điểm tích lũy không được âm")
 
-@points.deleter
-def points(self): # xóa điểm tích lũy và cho về 0 
-    self.total_spent = 0 
+    @points.deleter
+    def points(self):
+        self.total_spent = 0
 
-def add_spending(self, money): # thêm chi tiêu mới vào tổng chi tiêu của khách hàng
-    if money > 0:
-        self.total_spent = self.total_spent + money #  cộng thêm số tiền mới
-    else:
-        print("Số tiền phải lớn hơn 0")
+    def add_spending(self, money):
+        if money > 0:
+            self.total_spent += money
+        else:
+            raise ValueError("Số tiền phải lớn hơn 0")
 
-def check_phone(self):
-    if self.phone.isdigit() and len(self.phone) >= 9: # sddt chỉ gòm số (is digit) và có độ dài hơn 9 ký tự
-        return True
-    else:
-        return False
+    def get_discount_rate(self):
+        return 0
 
-def show_customer_info(self):
-    return "Khách hàng: " + self.name + " - Số điện thoại: " + self.phone 
+    def show_customer_info(self):
+        return f"Khách hàng: {self.name} - Số điện thoại: {self.phone}"
 
 
 class RegularCustomer(Customer):
     __tablename__ = "regular_customers"
-    id = db.Column(db.Integer, db.ForeignKey("customers.id"), primary_key=True)# kết nối bảng con với bảng cha bằng id (bảng cha customers)
-    __mapper_args__ = { # định nghĩa mapper args để phân biệt giữa các loại khách hàng
-        "polymorphic_identity": "regular" # phân biệt dựa vào bảng type trong customers
+
+    id = db.Column(db.Integer, db.ForeignKey("customers.id"), primary_key=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "regular"
     }
+
     def get_discount_rate(self):
-        discount = 0
-        return discount
+        return 0
 
 
 class VIPCustomer(Customer):
     __tablename__ = "vip_customers"
+
     id = db.Column(db.Integer, db.ForeignKey("customers.id"), primary_key=True)
+
     __mapper_args__ = {
-        "polymorphic_identity": "vip" # phân biệt dựa vào bảng type trong customers
+        "polymorphic_identity": "vip"
     }
 
     def get_discount_rate(self):
-        discount = 0
         if self.total_spent >= 200000000:
-            discount = 0.10
-        elif self.total_spent >= 100000000:
-            discount = 0.05
-        return discount
+            return 0.10
+        if self.total_spent >= 100000000:
+            return 0.05
+        return 0

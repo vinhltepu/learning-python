@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Sửa khách hàng{% endblock %}
+
+{% block content %}
+  <h2>Sửa khách hàng</h2>
+  <form method="post">
+    <div class="form-row">
+      <label>
+        Tên
+        <input type="text" name="name" value="{{ customer.name }}" required>
+      </label>
+      <label>
+        Điện thoại
+        <input type="text" name="phone" value="{{ customer.phone }}" required>
+      </label>
+      <label>
+        Địa chỉ
+        <input type="text" name="address" value="{{ customer.address }}" required>
+      </label>
+      <label>
+        Tổng chi tiêu
+        <input type="number" name="total_spent" step="0.01" min="0" value="{{ customer.total_spent }}">
+      </label>
+    </div>
+    <button type="submit">Lưu thay đổi</button>
+    <a class="button" href="{{ url_for('customers.list_customers') }}">Hủy</a>
+  </form>
+{% endblock %}

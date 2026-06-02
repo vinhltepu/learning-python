@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Chi tiết hóa đơn #{{ invoice.id }}{% endblock %}
+
+{% block content %}
+  <p><strong>Khách hàng:</strong> {{ invoice.customer.name }}</p>
+  <p><strong>Ngày tạo:</strong> {{ invoice.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Đơn giá</th>
+        <th>Số lượng</th>
+        <th>Thành tiền</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for detail in invoice.details %}
+        <tr>
+          <td>{{ detail.product.name }}</td>
+          <td>{{ '{:,.0f}'.format(detail.unit_price) }} đ</td>
+          <td>{{ detail.quantity }}</td>
+          <td>{{ '{:,.0f}'.format(detail.line_total) }} đ</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p><strong>Tổng phụ:</strong> {{ '{:,.0f}'.format(invoice.subtotal) }} đ</p>
+  <p><strong>Giảm giá:</strong> {{ (invoice.discount_rate * 100)|round(0) }}%</p>
+  <p><strong>Tổng thanh toán:</strong> {{ '{:,.0f}'.format(invoice.total_amount) }} đ</p>
+
+  <a class="button" href="{{ url_for('invoices.list_invoices') }}">Quay lại danh sách hóa đơn</a>
+{% endblock %}
