@@ -1,55 +1,58 @@
-{% extends "base.html" %}
 
 {% block title %}Quản lý hàng hóa{% endblock %}
 
 {% block content %}
-  <h2>Danh sách hàng hóa</h2>
-  <form method="get" class="form-row">
+  <h2>Quản lý hàng hóa</h2>
+
+  <form method="get" action="{{ url_for('goods.list_goods') }}" class="form-row">
     <label>
-      Tìm kiếm
-      <input type="search" name="keyword" value="{{ keyword }}" placeholder="Tên hoặc mã sản phẩm">
+      Tìm kiếm:
+      <input type="text" name="keyword" value="{{ keyword }}" placeholder="Tên hoặc mã hàng">
     </label>
     <button type="submit">Tìm</button>
+    <a class="button" href="{{ url_for('goods.list_goods') }}">Xóa</a>
   </form>
 
   {% if products %}
     <table>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Loại</th>
+          <th>STT</th>
           <th>Tên</th>
           <th>Mã</th>
+          <th>Loại</th>
           <th>Đơn vị</th>
           <th>Giá bán</th>
           <th>Tồn kho</th>
+          <th>Ngày nhập</th>
           <th>Thông tin thêm</th>
-          <th>Thao tác</th>
+          <th>Hành động</th>
         </tr>
       </thead>
       <tbody>
         {% for product in products %}
           <tr>
-            <td>{{ product.id }}</td>
-            <td>{{ product.type }}</td>
+            <td>{{ loop.index }}</td>
             <td>{{ product.name }}</td>
             <td>{{ product.code }}</td>
+            <td>{{ product.type }}</td>
             <td>{{ product.unit }}</td>
             <td>{{ '{:,.0f}'.format(product.sale_price) }} đ</td>
             <td>{{ product.stock }}</td>
+            <td>{{ product.import_date }}</td>
             <td>
               {% if product.type == 'painting' %}
-                {{ product.brand_name }}
+                Hãng sơn: {{ product.brand_name }}
               {% elif product.type == 'wood' %}
-                {{ product.source }}
+                Nguồn gỗ: {{ product.source }}
               {% else %}
                 -
               {% endif %}
             </td>
             <td>
               <a class="button" href="{{ url_for('goods.edit_goods', product_id=product.id) }}">Sửa</a>
-              <form action="{{ url_for('goods.delete_goods', product_id=product.id) }}" method="post" style="display:inline;">
-                <button type="submit" style="background:#d32f2f;">Xóa</button>
+              <form method="post" action="{{ url_for('goods.delete_goods', product_id=product.id) }}" style="display:inline;">
+                <button type="submit">Xóa</button>
               </form>
             </td>
           </tr>
@@ -64,44 +67,57 @@
   <form method="post" action="{{ url_for('goods.add_goods') }}">
     <div class="form-row">
       <label>
-        Loại sản phẩm
+        Loại hàng:
         <select name="product_type">
-          <option value="product">Sản phẩm chung</option>
+          <option value="product">Thường</option>
           <option value="painting">Sơn</option>
           <option value="wood">Gỗ</option>
         </select>
       </label>
+
       <label>
-        Tên
+        Tên hàng:
         <input type="text" name="name" required>
       </label>
+
       <label>
-        Mã
+        Mã hàng:
         <input type="text" name="code" required>
       </label>
+
       <label>
-        Đơn vị
+        Đơn vị:
         <input type="text" name="unit" required>
       </label>
+
       <label>
-        Giá nhập
-        <input type="number" step="0.01" name="import_price" required>
+        Giá nhập:
+        <input type="number" name="import_price" step="0.01" required>
       </label>
+
       <label>
-        Giá bán
-        <input type="number" step="0.01" name="sale_price" required>
+        Giá bán:
+        <input type="number" name="sale_price" step="0.01" required>
       </label>
+
       <label>
-        Tồn kho
+        Tồn kho:
         <input type="number" name="stock" min="0" required>
       </label>
+
       <label>
-        Ngày nhập
+        Ngày nhập:
         <input type="date" name="import_date" required>
       </label>
+
       <label>
-        Thông tin thêm (hãng sơn / nguồn gỗ)
-        <input type="text" name="brand_name" placeholder="Hãng sơn hoặc nguồn gỗ">
+        Hãng sơn:
+        <input type="text" name="brand_name" placeholder="Dành cho sản phẩm Sơn">
+      </label>
+
+      <label>
+        Nguồn gỗ:
+        <input type="text" name="source" placeholder="Dành cho sản phẩm Gỗ">
       </label>
     </div>
     <button type="submit">Thêm hàng hóa</button>
