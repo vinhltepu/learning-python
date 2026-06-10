@@ -3,11 +3,11 @@ from routes.goods import goods_bp
 from routes.customers import customers_bp
 from routes.invoices import invoices_bp
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
+from extensions import db
 
 app = Flask(__name__)
 app.config.from_object(Config)
-db = SQLAlchemy(app)
+db.init_app(app)
 
 
 # đăng ký các blueprint với ứng dụng chính 

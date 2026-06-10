@@ -1,14 +1,14 @@
 from datetime import datetime
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import db
+from extensions import db
 from models.invoices import Invoice, InvoiceDetail
 from models.customers import Customer
 from models.goods import Product
 
 invoices_bp = Blueprint('invoices', __name__)
 
-@invoices_bp.route("/")
+@invoices_bp.route("/") # Route danh sách hóa đơn 
 def list_invoices():
     customer_id = request.args.get("customer_id", type=int)
     created_at = request.args.get("created_at", type=str)
@@ -35,7 +35,7 @@ def list_invoices():
     )
 
 
-@invoices_bp.route("/create", methods=["GET", "POST"])
+@invoices_bp.route("/create", methods=["GET", "POST"]) # Route tạo hóa đơn mới
 def create_invoice():
     customers = Customer.query.order_by(Customer.name).all()
     products = Product.query.order_by(Product.name).all()
@@ -105,13 +105,13 @@ def create_invoice():
     )
 
 
-@invoices_bp.route("/<int:invoice_id>")
+@invoices_bp.route("/<int:invoice_id>") # thông tin chi tiết hóa đơn
 def invoice_detail(invoice_id):
     invoice = Invoice.query.get_or_404(invoice_id)
     return render_template("invoice_detail.html", invoice=invoice)
 
 
-@invoices_bp.route("/<int:invoice_id>/delete", methods=["POST"])
+@invoices_bp.route("/<int:invoice_id>/delete", methods=["POST"]) # Route xóa hóa đơn
 def delete_invoice(invoice_id):
     invoice = Invoice.query.get_or_404(invoice_id)
 

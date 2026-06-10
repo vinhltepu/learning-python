@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from extensions import db
 
 class Invoice(db.Model):
     __tablename__ = 'invoices'
@@ -12,8 +12,8 @@ class Invoice(db.Model):
     total_amount = db.Column(db.Float, default=0)
 
     # tạo mối liên hệ 
-    customer = db.relationship("Customer")
-    details = db.relationship("InvoiceDetail", backref="invoice", cascade="all, delete-orphan")
+    customer = db.relationship("Customer",back_populates="invoices")
+    details = db.relationship("InvoiceDetail", back_populates="invoice", cascade="all, delete-orphan")
 
     def calculate_total(self):
         """Tính tổng tiền hóa đơn dựa trên các chi tiết và áp dụng giảm giá."""
@@ -53,6 +53,7 @@ class InvoiceDetail(db.Model):
 
     # Mối quan hệ với Product
     product = db.relationship("Product")
+    invoice = db.relationship("Invoice", back_populates="details")
 
     def __init__(self, product_id, quantity, unit_price):
         self.product_id = product_id

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from app import db
+from extensions import db
 from models.goods import Product, PaintingProduct, WoodProduct
 from datetime import datetime
 

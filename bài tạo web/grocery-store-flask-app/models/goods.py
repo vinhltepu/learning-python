@@ -1,5 +1,5 @@
 from datetime import date
-from app import db
+from extensions import db
 
 
 class Product(db.Model):

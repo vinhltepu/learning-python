@@ -1,5 +1,5 @@
 
-from app import db
+from extensions import db
 
 class Customer(db.Model):
     __tablename__ = 'customers'
@@ -16,7 +16,7 @@ class Customer(db.Model):
         "polymorphic_on": type
     }
 
-    invoices = db.relationship("Invoice", backref="customer", lazy=True)
+    invoices = db.relationship("Invoice", back_populates="customer", lazy=True)
 
     def __init__(self, name, phone, address, total_spent=0):
         self.name = name
