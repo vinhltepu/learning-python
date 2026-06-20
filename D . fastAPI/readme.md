@@ -25,3 +25,11 @@ Tách biệt Frontend & Backend rõ ràng:
 Tái sử dụng cho nhiều client
 Một backend duy nhất có thể phục vụ cả web lẫn mobile — cả hai chỉ cần gọi cùng một API, không cần viết lại logic
 
+# Mục đích của 3 file authors, books, categories trong api/endpoints
+Đây là pattern "Router Separation" (tách router theo resource) trong FastAPI. Cả 3 file có cấu trúc giống nhau vì chúng đều là API Router độc lập, mỗi file quản lý một nhóm tài nguyên riêng biệt.
+
+api/endpoints/
+├── authors.py    → Quản lý tất cả API liên quan đến Tác giả
+├── books.py      → Quản lý tất cả API liên quan đến Sách  
+└── categories.py → Quản lý tất cả API liên quan đến Thể loại
+
