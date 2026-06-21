@@ -28,8 +28,26 @@ Một backend duy nhất có thể phục vụ cả web lẫn mobile — cả ha
 # Mục đích của 3 file authors, books, categories trong api/endpoints
 Đây là pattern "Router Separation" (tách router theo resource) trong FastAPI. Cả 3 file có cấu trúc giống nhau vì chúng đều là API Router độc lập, mỗi file quản lý một nhóm tài nguyên riêng biệt.
 
-api/endpoints/
-├── authors.py    → Quản lý tất cả API liên quan đến Tác giả
-├── books.py      → Quản lý tất cả API liên quan đến Sách  
-└── categories.py → Quản lý tất cả API liên quan đến Thể loại
-
+# cấu trúc tổng thể 
+FAST-API-BOOKS/
+├── api/
+├── core/
+│   ├── __init__.py
+│   └── config.py        → Cấu hình chung của ứng dụng (tên app, database URI)
+├── db/
+│   ├── __init__.py
+│   ├── base.py          → Khai báo Base model cho SQLAlchemy
+│   └── session.py       → Khởi tạo engine và SessionLocal kết nối database
+├── models/
+│   ├── __init__.py
+│   ├── author.py        → Model SQLAlchemy của Tác giả (ánh xạ bảng DB)
+│   ├── book.py          → Model SQLAlchemy của Sách (ánh xạ bảng DB)
+│   └── category.py      → Model SQLAlchemy của Thể loại (ánh xạ bảng DB)
+├── schemas/
+│   ├── __init__.py
+│   ├── author.py        → Pydantic schema validate dữ liệu Tác giả
+│   ├── book.py          → Pydantic schema validate dữ liệu Sách
+│   └── category.py      → Pydantic schema validate dữ liệu Thể loại
+├── static/
+│   └── covers/          → Thư mục lưu ảnh bìa sách
+└── main.py              → Điểm khởi chạy ứng dụng FastAPI

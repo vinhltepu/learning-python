@@ -3,7 +3,7 @@ from sqlalchemy.orm import func
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
-
+# Đây là model Book, đại diện cho bảng books trong database, có các trường id, title, description, publisher_year, author_id, category_id, cover_image, created_at, updated_at và mối quan hệ với bảng authors và categories thông qua relationship.
 class Book(Base):
     __tablename__ = "books"
     id = Column(Integer, primary_key=True, index=True)

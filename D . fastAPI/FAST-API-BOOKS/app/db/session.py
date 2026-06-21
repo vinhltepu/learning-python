@@ -9,3 +9,6 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if settings.SQLALCHEMY_DATABASE_URI.startswith("sqlite") else {}
     )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# engine tạo kết nối đến database đọc URI từ file cấu hình settings, với tùy chọn connect_args để hỗ trợ SQLite
+#sessionmaker tạo ra một class SessionLocal , mỗi lần gọi SessionLocal() sẽ mở 1 phiên làm việc với DB. autocommit=False nghĩa là phải gọi db.commit() thủ công

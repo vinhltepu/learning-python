@@ -7,6 +7,8 @@ app = FastAPI(
     #có tác dụng khi truy cập vào tài liệu API
     version="1.0.0", # version cua API , có tác dụng khi truy cập vào tài liệu API
 )
+
+app.mount("/static", StaticFiles(directory="app/static"), name="static") # mount static files for covers images
 # include routers 
 app.include_router(authors.router, prefix="/authors", tags=["Authors"]) 
 app.include_router(books.router, prefix="/books", tags=["Books"])
