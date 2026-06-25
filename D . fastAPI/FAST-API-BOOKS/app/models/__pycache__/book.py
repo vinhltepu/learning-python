@@ -10,12 +10,12 @@ class Book(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     publisher_year  = Column(Integer, nullable=True)
-
+    # tạo các khóa ngoại để liên kết với bảng authors và categories, với ondelete="RESTRICT" để ngăn chặn việc xóa tác giả hoặc danh mục nếu có sách liên quan
     author_id = Column(Integer, ForeignKey("authors.id"), ondelete="RESTRICT", nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id"), ondelete="RESTRICT", nullable=False)
-
+    # lưu đuờng dẫn đến hình ảnh bìa sách, có thể null nếu không có hình ảnh
     cover_image = Column(String(255), nullable=True)
-
+    # tự động ghi thời gian tạo và cập nhật bản ghi, sử dụng func.now() để lấy thời gian hiện tại từ cơ sở dữ liệu
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 

@@ -9,7 +9,7 @@ app = FastAPI(
 )
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static") # mount static files for covers images
-# include routers 
+ # mount thư mục static để phục vụ các tệp tĩnh như hình ảnh bìa sácch
 app.include_router(authors.router, prefix="/authors", tags=["Authors"]) 
 app.include_router(books.router, prefix="/books", tags=["Books"])
 app.include_router(categories.router, prefix="/categories", tags=["Categories"])

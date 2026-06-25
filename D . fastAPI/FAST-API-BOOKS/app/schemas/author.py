@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+# tạo ra các lớp cơ sở dữ liệu (schemas) cho mô hình Author. Các lớp này được sử dụng để xác định cấu trúc dữ liệu và xác thực dữ liệu đầu vào/đầu ra trong ứng dụng FastAPI.
 class AuthorBase(BaseModel):
     name: str
     bio: str | None = None

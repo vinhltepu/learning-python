@@ -2,6 +2,7 @@ from typing import Generator
 
 from app.db.session import SessionLocal
 #Đây là một dependency function được FastAPI inject vào các route thông qua Depends(get_db)
+# mở sesion get_db sau đó trả cho route handler sử dụng, khi route xử lý xong thì đóng sesion lại
 def get_db() -> Generator:
     try:
         db = SessionLocal()
