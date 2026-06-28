@@ -24,7 +24,7 @@ def list_customers(
         query = query.filter(or_(
             models.Customer.name.ilike(like),
             models.Customer.phone.ilike(like),
-        ))
+        )) 
     return query.offset(skip).limit(limit).all()
 
 # hiển thị khách hàng theo id, nếu không có thì trả về 404
