@@ -5,7 +5,8 @@ from typing import List, Optional
 
 from app.api.deps import get_db
 from app import models
-from app.schemas.customer import  CustomerOut, RegularCustomerCreate, VIPCustomerCreate, CustomerUpdate
+from app.schemas.customer import  CustomerOut, CustomerUpdate , CustomerCreate
+
 
 
 router = APIRouter()
@@ -32,19 +33,16 @@ def list_customers(
 def get_customer(customer_id: int, db: Session = Depends(get_db)):
     return _get_or_404(customer_id, db)
 
-# tạo khách hàng thường
-@router.post("/regular", response_model=CustomerOut, status_code=status.HTTP_201_CREATED)
-def create_regular(data: RegularCustomerCreate, db: Session = Depends(get_db)):
+# tạo mới khách hàng, kiểm tra số điện thoại có trùng không
+@router.post("/", response_model=CustomerOut, status_code=status.HTTP_201_CREATED)
+def create_customer(
+    data: CustomerCreate,
+    customer_type: Literal["regular", "vip"] = Query(..., description="Loại khách hàng"),
+    db: Session = Depends(get_db),
+):
     _check_phone_unique(data.phone, db)
-    customer = models.RegularCustomer(**data.model_dump())
-    db.add(customer); db.commit(); db.refresh(customer)
-    return customer
-
-# tạo khách hàng VIP
-@router.post("/vip", response_model=CustomerOut, status_code=status.HTTP_201_CREATED)
-def create_vip(data: VIPCustomerCreate, db: Session = Depends(get_db)):
-    _check_phone_unique(data.phone, db)
-    customer = models.VIPCustomer(**data.model_dump())
+    model_cls = models.VIPCustomer if customer_type == "vip" else models.RegularCustomer
+    customer = model_cls(**data.model_dump())
     db.add(customer); db.commit(); db.refresh(customer)
     return customer
 

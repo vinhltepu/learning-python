@@ -102,6 +102,7 @@ def create_invoice(
     db.commit()
     db.refresh(invoice)
     return invoice
+    
 # tạo endpoint để xóa hóa đơn theo id, đồng thời cập nhật lại số lượng tồn kho của các sản phẩm trong hóa đơn
 @router.delete("/{invoice_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_invoice(
@@ -118,3 +119,17 @@ def delete_invoice(
     
     db.delete(invoice)
     db.commit()
+# chỉnh sửa hóa đơn bằng Patch, chỉ cho phép chỉnh sửa số lượng sản phẩm trong hóa đơn, đồng thời cập nhật lại số lượng tồn kho của các sản phẩm trong hóa đơn
+@router.patch("/{invoice_id}", response_model=Invoice)
+def update_invoice(
+    invoice_id: int,
+    invoice_in: InvoiceCreate,
+    db: Session = Depends(get_db)
+    ):
+    # chỉnh sửa hóa đơn bằng Patch, chỉ cho phép chỉnh sửa số lượng sản phẩm trong hóa đơn, đồng thời cập nhật lại số lượng tồn kho của các sản phẩm trong hóa đơn
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    if not invoice:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Invoice not found",
+        )

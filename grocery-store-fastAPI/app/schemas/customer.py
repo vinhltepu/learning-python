@@ -5,12 +5,7 @@ class CustomerBase(BaseModel):
     phone: str
     address: str | None = None
 
-# dùng khi tạo mới khách hàng thường, ta sẽ kế thừa từ CustomerBase và không cần thêm gì cả
-class RegularCustomerCreate(CustomerBase):
-    pass
-
-# dùng khi tạo mới khách hàng VIP, ta sẽ kế thừa từ CustomerBase và không cần thêm gì cả
-class VIPCustomerCreate(CustomerBase):
+class CustomerCreate(CustomerBase):
     pass
 
 # dùng khi update khách hàng, ta sẽ kế thừa từ BaseModel và có thể update bất kỳ trường nào trong CustomerBase
