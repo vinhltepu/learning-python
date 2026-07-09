@@ -1,5 +1,8 @@
-from fastapi import FastAPI
-from fastapi import Request
+from fastapi import FastAPI , Request, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import func, extract
+from app import models 
+from app.api.deps import get_db
 from app.core.config import settings
 from app.db.session import engine
 from app.db import base  #kích hoạt import models để create_all biết bảng nào cần tạo
@@ -24,11 +27,55 @@ app.include_router(customers.router, prefix="/customers", tags=["Customers"])
 app.include_router(invoices.router,  prefix="/invoices",  tags=["Invoices"])
 app.include_router(stats.router,     prefix="/stats",     tags=["Stats"])
 
-@app.get("/")
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         context={}
+    ) 
+
+
+@app.get("/products-page", include_in_schema=False)
+def products_page(request: Request, db: Session = Depends(get_db)):
+    products_list = db.query(models.Product).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="products.html",
+        context={"products": products_list}  
     )
+
+
+@app.get("/customers-page", include_in_schema=False)
+def customers_page(request: Request, db: Session = Depends(get_db)):
+    customers_list = db.query(models.Customer).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="customers.html",
+        context={"customers": customers_list}
+    )
+
+
+@app.get("/invoices-page", include_in_schema=False)
+def invoices_page(request: Request, db: Session = Depends(get_db)):
+    invoices_list = db.query(models.Invoice).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="invoices.html",
+        context={"invoices": invoices_list}
+    )
+
+
+@app.get("/stats-page", include_in_schema=False)
+def stats_page(request: Request, db: Session = Depends(get_db)):
+    return templates.TemplateResponse(
+        request=request,
+        name="stats.html",
+        context={
+            "products": db.query(models.Product).count(),
+            "customers": db.query(models.Customer).count(),
+            "invoices": db.query(models.Invoice).count(),
+            "total_revenue": db.query(func.sum(models.Invoice.total_amount)).scalar() or 0
+        }
+    )
+

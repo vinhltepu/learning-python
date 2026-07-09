@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{%block content%}
+<h2>Quản lý khách hàng</h2>
+<table border="1" cellpadding="8">
+    <tr>
+        <th>ID</th>
+        <th>Họ tên</th>
+        <th>SĐT</th>
+        <th>Địa chỉ</th>
+        <th>Loại KH</th>
+    </tr>
+
+    {% for customer in customers %}
+    <tr>
+        <td>{{ customer.id }}</td>
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.phone }}</td>
+        <td>{{ customer.address }}</td>
+        <td>{{ customer.type }}</td>
+    </tr>
+    {% endfor %}
+
+</table>
+{%endblock%}

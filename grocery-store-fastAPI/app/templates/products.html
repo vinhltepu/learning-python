@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>QUẢN LÝ SẢN PHẨM</h2>
+
+<hr>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Đơn vị</th>
+        <th>Giá nhập</th>
+        <th>Giá bán</th>
+        <th>Tồn kho</th>
+    </tr>
+
+    {% for product in products %}
+
+    <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.unit }}</td>
+        <td>{{ product.import_price }}</td>
+        <td>{{ product.sale_price }}</td>
+        <td>{{ product.stock }}</td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

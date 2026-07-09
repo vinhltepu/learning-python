@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Thống kê doanh thu</h2>
+<table border="1" cellpadding="8">
+    <tr>
+        <th>Tổng khách hàng</th>
+        <td>{{ customers|length }}</td>
+    </tr>
+
+    <tr>
+        <th>Tổng hóa đơn</th>
+        <td>{{ invoices|length }}</td>
+    </tr>
+
+    <tr>
+        <th>Tổng sản phẩm</th>
+        <td>{{ products|length }}</td>
+    </tr>
+
+    
+    <tr>
+        <th>Tổng doanh thu</th>
+        <td>{{ total_revenue }}</td>
+    </tr>
+
+</table>
+{% endblock %}
