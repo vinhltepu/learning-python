@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query , Request , Form
+from fastapi.responses import RedirectResponse
 from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
-from app.api.deps import get_db
+from app.api.deps import get_db , templates
 from app import models
 from app.schemas.product import Product, ProductCreate, PaintingProductCreate, WoodProductCreate, ProductUpdate
 
@@ -185,3 +186,34 @@ def delete_product(
     
     db.delete(product)
     db.commit()
+
+@router.get("/edit/{product_id}", include_in_schema=False)
+def edit_product_page(product_id: int, request: Request, db: Session = Depends(get_db)):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    return templates.TemplateResponse(request=request, name="product_edit.html", context={"product": product})
+
+@router.post("/edit/{product_id}", include_in_schema=False)
+def edit_product_submit(
+    product_id: int,
+    name: str = Form(...),
+    unit: str = Form(...),
+    import_price: float = Form(...),
+    selling_price: float = Form(...),
+    stock: int = Form(...),
+    db: Session = Depends(get_db),
+):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    product.name = name
+    product.unit = unit
+    product.import_price = import_price
+    product.selling_price = selling_price
+    product.stock = stock
+    db.commit()
+    return RedirectResponse(url="/products-page", status_code=303)
+
+@router.get("/delete/{product_id}", include_in_schema=False)
+def delete_product_page(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    db.delete(product)
+    db.commit()
+    return RedirectResponse(url="/products-page", status_code=303)

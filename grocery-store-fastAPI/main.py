@@ -1,6 +1,6 @@
-from fastapi import FastAPI , Request, Depends
+from fastapi import FastAPI , Request, Depends 
 from sqlalchemy.orm import Session
-from sqlalchemy import func, extract
+from sqlalchemy import func
 from app import models 
 from app.api.deps import get_db
 from app.core.config import settings
@@ -42,7 +42,7 @@ def products_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         request=request,
         name="products.html",
-        context={"products": products_list}  
+        context={"request": request, "products": products_list}  
     )
 
 
@@ -52,7 +52,7 @@ def customers_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         request=request,
         name="customers.html",
-        context={"customers": customers_list}
+        context={"request": request, "customers": customers_list, "customer": None}
     )
 
 
@@ -62,7 +62,7 @@ def invoices_page(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse(
         request=request,
         name="invoices.html",
-        context={"invoices": invoices_list}
+        context={"request": request, "invoices": invoices_list}
     )
 
 
@@ -72,10 +72,13 @@ def stats_page(request: Request, db: Session = Depends(get_db)):
         request=request,
         name="stats.html",
         context={
-            "products": db.query(models.Product).count(),
-            "customers": db.query(models.Customer).count(),
-            "invoices": db.query(models.Invoice).count(),
-            "total_revenue": db.query(func.sum(models.Invoice.total_amount)).scalar() or 0
+            "total_products": db.query(models.Product).count(),
+            "total_customers": db.query(models.Customer).count(),
+            "total_invoices": db.query(models.Invoice).count(),
+            "total_revenue": db.query(func.sum(models.Invoice.final_amount)).scalar() or 0
         }
     )
+
+
+    
 

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query , Request , Form
+from fastapi.responses import RedirectResponse
 from typing import List
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db
+from app.api.deps import get_db , templates
 from app import models
 from app.schemas.invoice import Invoice, InvoiceCreate
 
@@ -133,3 +134,10 @@ def update_invoice(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Invoice not found",
         )
+
+@router.get("/delete/{invoice_id}", include_in_schema=False)
+def delete_invoice_page(invoice_id: int, db: Session = Depends(get_db)):
+    invoice = db.query(models.Invoice).filter(models.Invoice.id == invoice_id).first()
+    db.delete(invoice)
+    db.commit()
+    return RedirectResponse(url="/invoices-page", status_code=303)

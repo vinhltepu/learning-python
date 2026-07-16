@@ -24,9 +24,16 @@
         <td>{{ product.name }}</td>
         <td>{{ product.unit }}</td>
         <td>{{ product.import_price }}</td>
-        <td>{{ product.sale_price }}</td>
+        <td>{{ product.selling_price }}</td>
         <td>{{ product.stock }}</td>
+
+        <td>
+            <a href="/products/edit/{{product.id}}">Sửa</a>
+            <a href="/products/delete/{{product.id}}">Xóa</a>
+        </td>
     </tr>
+
+    
 
     {% endfor %}
 

@@ -5,21 +5,19 @@
 <h2>Quản lý hóa đơn</h2>
 <table border="1" cellpadding="8">
     <tr>
-        <th>ID</th>
-        <th>Ngày lập</th>
-        <th>Khách hàng</th>
-        <th>Nhân viên</th>
-        <th>Tổng tiền</th>
-    </tr>
-
-    {% for invoice in invoices %}
-    <tr>
-        <td>{{ invoice.id }}</td>
-        <td>{{ invoice.date }}</td>
-        <td>{{ invoice.customer.name }}</td>
-        <td>{{ invoice.employee.name }}</td>
-        <td>{{ invoice.total_amount }}</td>
-    </tr>
+    <th>ID</th><th>Ngày lập</th><th>Khách hàng</th><th>Tổng tiền</th><th>Thao tác</th>
+</tr>
+{% for invoice in invoices %}
+<tr>
+    <td>{{ invoice.id }}</td>
+    <td>{{ invoice.created_at.strftime("%d/%m/%Y") if invoice.created_at else "" }}</td>
+    <td>{{ invoice.customer.name }}</td>
+    <td>{{ invoice.total_amount }}</td>
+    <td>
+        <a href="/invoices/delete/{{invoice.id}}">Xóa</a>
+    </td>
+</tr>
+{% endfor %}
     {% endfor %}
 </table>
 {% endblock %}

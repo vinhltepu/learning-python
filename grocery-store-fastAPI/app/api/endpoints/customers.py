@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query ,Request , Form
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from typing import List, Optional
+from typing import List, Optional,Literal
 
-from app.api.deps import get_db
+from app.api.deps import get_db , templates
 from app import models
 from app.schemas.customer import  CustomerOut, CustomerUpdate , CustomerCreate
 
@@ -27,6 +28,34 @@ def list_customers(
             models.Customer.phone.ilike(like),
         )) 
     return query.offset(skip).limit(limit).all()
+@router.get("/edit/{customer_id}", include_in_schema=False)
+def edit_customer_page(
+    customer_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    customer = _get_or_404(customer_id, db)
+
+    customers = db.query(models.Customer).all()
+
+    return templates.TemplateResponse(
+        "customers.html",
+        {
+            "request": request,
+            "customers": customers,
+            "customer": customer
+        }
+    )
+
+@router.get("/delete/{customer_id}", include_in_schema=False)
+def delete_customer_page(customer_id: int, db: Session = Depends(get_db)):
+    customer = _get_or_404(customer_id, db)
+    invoices = db.query(models.Invoice).filter(models.Invoice.customer_id == customer_id).all()
+    if invoices:
+        return RedirectResponse(url="/customers-page", status_code=303)  # có hóa đơn thì không xóa
+    db.delete(customer)
+    db.commit()
+    return RedirectResponse(url="/customers-page", status_code=303)
 
 # hiển thị khách hàng theo id, nếu không có thì trả về 404
 @router.get("/{customer_id}", response_model=CustomerOut)
@@ -84,3 +113,4 @@ def _check_phone_unique(phone: str, db: Session):
     existing = db.query(models.Customer).filter(models.Customer.phone == phone).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Số điện thoại đã tồn tại")
+
