@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Sửa hóa đơn</h2>
+
+<form action="/invoices/edit/{{ invoice.id }}" method="post">
+
+    <p>
+        <label>Mã hóa đơn</label><br>
+        <input type="text"
+               value="{{ invoice.id }}"
+               readonly>
+    </p>
+
+    <p>
+        <label>Ngày lập</label><br>
+        <input type="text"
+               value="{{ invoice.created_at.strftime('%d/%m/%Y') if invoice.created_at else '' }}"
+               readonly>
+    </p>
+
+    <p>
+        <label>Khách hàng</label><br>
+        <select name="customer_id">
+
+            {% for customer in customers %}
+
+            <option value="{{ customer.id }}"
+                {% if customer.id == invoice.customer_id %}
+                    selected
+                {% endif %}
+            >
+                {{ customer.name }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+    </p>
+
+    <p>
+        <label>Tổng tiền</label><br>
+        <input type="text"
+               value="{{ invoice.total_amount }}"
+               readonly>
+    </p>
+
+    <p>
+        <label>Giảm giá</label><br>
+        <input type="text"
+               value="{{ invoice.discount_rate * 100 }}%"
+               readonly>
+    </p>
+
+    <p>
+        <label>Thành tiền</label><br>
+        <input type="text"
+               value="{{ invoice.final_amount }}"
+               readonly>
+    </p>
+
+    <button type="submit">
+        Cập nhật
+    </button>
+
+</form>
+
+{% endblock %}

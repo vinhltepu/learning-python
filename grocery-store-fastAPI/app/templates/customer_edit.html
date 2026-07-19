@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Sửa khách hàng</h2>
+
+<form action="/customers/edit/{{ customer.id }}" method="post">
+
+    <p>
+        <label>Họ tên</label><br>
+        <input
+            type="text"
+            name="name"
+            value="{{ customer.name }}"
+            required>
+    </p>
+
+    <p>
+        <label>Số điện thoại</label><br>
+        <input
+            type="text"
+            name="phone"
+            value="{{ customer.phone }}"
+            required>
+    </p>
+
+    <p>
+        <label>Địa chỉ</label><br>
+        <input
+            type="text"
+            name="address"
+            value="{{ customer.address }}">
+    </p>
+
+    <button type="submit">
+        Cập nhật
+    </button>
+
+</form>
+
+{% endblock %}

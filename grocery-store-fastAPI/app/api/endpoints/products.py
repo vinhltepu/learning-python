@@ -190,7 +190,14 @@ def delete_product(
 @router.get("/edit/{product_id}", include_in_schema=False)
 def edit_product_page(product_id: int, request: Request, db: Session = Depends(get_db)):
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
-    return templates.TemplateResponse(request=request, name="product_edit.html", context={"product": product})
+
+    return templates.TemplateResponse(
+    request=request,
+    name="product_edit.html",
+    context={
+        "product": product
+        }
+    )
 
 @router.post("/edit/{product_id}", include_in_schema=False)
 def edit_product_submit(
@@ -217,3 +224,18 @@ def delete_product_page(product_id: int, db: Session = Depends(get_db)):
     db.delete(product)
     db.commit()
     return RedirectResponse(url="/products-page", status_code=303)
+
+@router.get("/products-page", include_in_schema=False)
+def products_page(
+    request: Request,
+    db: Session =Depends(get_db)
+):
+    products = db.query(models.Product).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="products.html",
+        context={
+            "products": products
+        }
+    )

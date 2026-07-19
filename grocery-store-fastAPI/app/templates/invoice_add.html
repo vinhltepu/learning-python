@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Thêm hóa đơn</h2>
+
+<form action="/invoices/add" method="post">
+
+    <p>
+        <label>Khách hàng</label><br>
+
+        <select name="customer_id">
+
+            {% for customer in customers %}
+
+            <option value="{{ customer.id }}">
+                {{ customer.name }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </p>
+
+    <p>
+        <button type="submit">
+            Thêm hóa đơn
+        </button>
+
+        <a href="/invoices-page">
+            Hủy
+        </a>
+    </p>
+
+</form>
+
+{% endblock %}

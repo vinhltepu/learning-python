@@ -21,3 +21,7 @@ FAST-API-GROCERY/
             ├── customers.py        → CRUD + tìm kiếm khách hàng
             ├── invoices.py         → Tạo hóa đơn, trừ kho, tích điểm
             └── stats.py            → Thống kê tồn kho, doanh thu, top KH
+
+
+cd "C:\Users\hanki\Desktop\hoc python\learning-python\grocery-store-fastAPI"
+uvicorn main:app --reload

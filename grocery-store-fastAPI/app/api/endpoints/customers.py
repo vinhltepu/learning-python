@@ -28,34 +28,7 @@ def list_customers(
             models.Customer.phone.ilike(like),
         )) 
     return query.offset(skip).limit(limit).all()
-@router.get("/edit/{customer_id}", include_in_schema=False)
-def edit_customer_page(
-    customer_id: int,
-    request: Request,
-    db: Session = Depends(get_db)
-):
-    customer = _get_or_404(customer_id, db)
 
-    customers = db.query(models.Customer).all()
-
-    return templates.TemplateResponse(
-        "customers.html",
-        {
-            "request": request,
-            "customers": customers,
-            "customer": customer
-        }
-    )
-
-@router.get("/delete/{customer_id}", include_in_schema=False)
-def delete_customer_page(customer_id: int, db: Session = Depends(get_db)):
-    customer = _get_or_404(customer_id, db)
-    invoices = db.query(models.Invoice).filter(models.Invoice.customer_id == customer_id).all()
-    if invoices:
-        return RedirectResponse(url="/customers-page", status_code=303)  # có hóa đơn thì không xóa
-    db.delete(customer)
-    db.commit()
-    return RedirectResponse(url="/customers-page", status_code=303)
 
 # hiển thị khách hàng theo id, nếu không có thì trả về 404
 @router.get("/{customer_id}", response_model=CustomerOut)
@@ -114,3 +87,49 @@ def _check_phone_unique(phone: str, db: Session):
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Số điện thoại đã tồn tại")
 
+@router.get("/edit/{customer_id}", include_in_schema=False)
+def edit_customer_page(
+    customer_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    customer = _get_or_404(customer_id, db)
+
+    return templates.TemplateResponse(
+    request=request,
+    name="customer_edit.html",
+    context={
+        "customer": customer
+    }
+)
+
+@router.get("/delete/{customer_id}", include_in_schema=False)
+def delete_customer_page(customer_id: int, db: Session = Depends(get_db)):
+    customer = _get_or_404(customer_id, db)
+    invoices = db.query(models.Invoice).filter(models.Invoice.customer_id == customer_id).all()
+    if invoices:
+        return RedirectResponse(url="/customers-page", status_code=303)  # có hóa đơn thì không xóa
+    db.delete(customer)
+    db.commit()
+    return RedirectResponse(url="/customers-page", status_code=303)
+
+@router.post("/edit/{customer_id}", include_in_schema=False)
+def edit_customer(
+    customer_id: int,
+    name: str = Form(...),
+    phone: str = Form(...),
+    address: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    customer = _get_or_404(customer_id, db)
+
+    customer.name = name
+    customer.phone = phone
+    customer.address = address
+
+    db.commit()
+
+    return RedirectResponse(
+        url="/customers-page",
+        status_code=303
+    )

@@ -1,33 +1,9 @@
 {% extends "base.html" %}
 
-{%block content%}
+{% block content %}
+
 <h2>Quản lý khách hàng</h2>
-{% if customer %}
 
-<form action="/customers/edit/{{ customer.id }}" method="post">
-
-    <p>
-        Họ tên<br>
-        <input type="text" name="name" value="{{ customer.name }}" required>
-    </p>
-
-    <p>
-        SĐT<br>
-        <input type="text" name="phone" value="{{ customer.phone }}" required>
-    </p>
-
-    <p>
-        Địa chỉ<br>
-        <input type="text" name="address" value="{{ customer.address }}" required>
-    </p>
-
-    <button type="submit">Lưu</button>
-
-</form>
-
-<hr>
-
-{% endif %}
 <table border="1" cellpadding="8">
     <tr>
         <th>ID</th>
@@ -35,6 +11,7 @@
         <th>SĐT</th>
         <th>Địa chỉ</th>
         <th>Loại KH</th>
+        <th>Thao tác</th>
     </tr>
 
     {% for customer in customers %}
@@ -43,16 +20,14 @@
         <td>{{ customer.name }}</td>
         <td>{{ customer.phone }}</td>
         <td>{{ customer.address }}</td>
-        <td>{{ customer.type }}</td>
-
         <td>{{ "VIP" if customer.customer_type == "vip" else "Thường" }}</td>
 
         <td>
-            <a href="/customers/edit/{{customer.id}}">Sửa</a>
-            <a href="/customers/delete/{{customer.id}}">Xóa</a>
+            <a href="/customers/edit/{{ customer.id }}">Sửa</a> |
+            <a href="/customers/delete/{{ customer.id }}">Xóa</a>
         </td>
     </tr>
     {% endfor %}
-
 </table>
-{%endblock%}
+
+{% endblock %}

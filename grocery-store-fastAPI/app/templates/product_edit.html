@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Sửa sản phẩm</h2>
+
+<form action="/products/edit/{{ product.id }}" method="post">
+
+    <p>
+        <label>Tên sản phẩm</label><br>
+        <input
+            type="text"
+            name="name"
+            value="{{ product.name }}"
+            required>
+    </p>
+
+    <p>
+        <label>Đơn vị</label><br>
+        <input
+            type="text"
+            name="unit"
+            value="{{ product.unit }}"
+            required>
+    </p>
+
+    <p>
+        <label>Giá nhập</label><br>
+        <input
+            type="number"
+            name="import_price"
+            value="{{ product.import_price }}"
+            step="0.01"
+            required>
+    </p>
+
+    <p>
+        <label>Giá bán</label><br>
+        <input
+            type="number"
+            name="selling_price"
+            value="{{ product.selling_price }}"
+            step="0.01"
+            required>
+    </p>
+
+    <p>
+        <label>Tồn kho</label><br>
+        <input
+            type="number"
+            name="stock"
+            value="{{ product.stock }}"
+            required>
+    </p>
+
+    <p>
+        <button type="submit">Cập nhật</button>
+    </p>
+
+</form>
+
+{% endblock %}

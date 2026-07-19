@@ -9,6 +9,71 @@ from app.schemas.invoice import Invoice, InvoiceCreate
 
 router = APIRouter()
 
+@router.get("/invoices-page", include_in_schema=False)
+def invoices_page(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    invoices = db.query(models.Invoice).all()
+
+    return templates.TemplateResponse(
+    request=request,
+    name="invoices.html",
+    context={
+        "invoices": invoices
+        }
+    )
+
+@router.get("/add", include_in_schema=False)
+def add_invoice_page(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    customers = db.query(models.Customer).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="invoice_add.html",
+        context={
+            "customers": customers
+        }
+    )
+@router.get("/add", include_in_schema=False)
+def add_invoice_page(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    customers = db.query(models.Customer).all()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="invoice_add.html",
+        context={
+            "customers": customers
+        }
+    )
+
+@router.post("/add", include_in_schema=False)
+def add_invoice(
+    customer_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    invoice = models.Invoice(
+        customer_id=customer_id,
+        total_amount=0,
+        discount_rate=0,
+        final_amount=0
+    )
+
+    db.add(invoice)
+    db.commit()
+
+    return RedirectResponse(
+        url="/invoices-page",
+        status_code=303
+    )
+    
+
 @router.get("/", response_model=List[Invoice])
 def list_invoices(
     db: Session = Depends(get_db),
@@ -134,6 +199,11 @@ def update_invoice(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Invoice not found",
         )
+    invoice.customer_id = invoice_in.customer_id
+    db.commit()
+    db.refresh(invoice)
+
+    return invoice
 
 @router.get("/delete/{invoice_id}", include_in_schema=False)
 def delete_invoice_page(invoice_id: int, db: Session = Depends(get_db)):
@@ -141,3 +211,56 @@ def delete_invoice_page(invoice_id: int, db: Session = Depends(get_db)):
     db.delete(invoice)
     db.commit()
     return RedirectResponse(url="/invoices-page", status_code=303)
+
+@router.get("/edit/{invoice_id}", include_in_schema=False)
+def edit_invoice_page(
+    invoice_id: int,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    invoice = db.query(models.Invoice).filter(
+        models.Invoice.id == invoice_id
+    ).first()
+
+    if not invoice:
+        raise HTTPException(
+            status_code=404,
+            detail="Invoice not found"
+        )
+
+    customers = db.query(models.Customer).all()
+
+    return templates.TemplateResponse(
+    request=request,
+    name="invoices_edit.html",
+    context={
+        "invoice": invoice,
+        "customers": customers
+        }
+    )
+
+@router.post("/edit/{invoice_id}", include_in_schema=False)
+def edit_invoice(
+    invoice_id: int,
+    customer_id: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    invoice = db.query(models.Invoice).filter(
+        models.Invoice.id == invoice_id
+    ).first()
+
+    if not invoice:
+        raise HTTPException(
+            status_code=404,
+            detail="Invoice not found"
+        )
+
+    invoice.customer_id = customer_id
+
+    db.commit()
+
+    return RedirectResponse(
+        url="/invoices-page",
+        status_code=303
+    )
+

@@ -15,6 +15,7 @@
         <th>Giá nhập</th>
         <th>Giá bán</th>
         <th>Tồn kho</th>
+        <th>Thao tác</th>
     </tr>
 
     {% for product in products %}
@@ -28,12 +29,10 @@
         <td>{{ product.stock }}</td>
 
         <td>
-            <a href="/products/edit/{{product.id}}">Sửa</a>
-            <a href="/products/delete/{{product.id}}">Xóa</a>
+            <a href="/products/edit/{{ product.id }}">Sửa</a> |
+            <a href="/products/delete/{{ product.id }}">Xóa</a>
         </td>
     </tr>
-
-    
 
     {% endfor %}
 
