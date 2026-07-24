@@ -10,3 +10,7 @@
 1. Khi làm xong bài -> Mở Github Desktop -> Commit bài -> Push lên git
 
 2. Commit thử
+
+
+cd "C:\Users\hanki\Desktop\hoc python\learning-python\grocery-store-fastAPI"
+uvicorn main:app --reload

@@ -29,6 +29,35 @@ def list_customers(
         )) 
     return query.offset(skip).limit(limit).all()
 
+@router.get("/add", include_in_schema=False)
+def add_customer_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="customer_add.html",
+        context={}
+    )
+
+
+@router.post("/add", include_in_schema=False)
+def add_customer(
+    name: str = Form(...),
+    phone: str = Form(...),
+    address: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    customer = models.Customer(
+        name=name,
+        phone=phone,
+        address=address
+    )
+
+    db.add(customer)
+    db.commit()
+    # sau khi hoàn thành sẽ chuyển hướng về trang khách hàng
+    return RedirectResponse(
+        url="/customers-page",
+        status_code=303
+    )
 
 # hiển thị khách hàng theo id, nếu không có thì trả về 404
 @router.get("/{customer_id}", response_model=CustomerOut)
@@ -133,3 +162,4 @@ def edit_customer(
         url="/customers-page",
         status_code=303
     )
+

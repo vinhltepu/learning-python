@@ -39,6 +39,42 @@ def list_products(
     products = query.offset(skip).limit(limit).all()
     return products
 
+@router.get("/add", include_in_schema=False)
+def add_product_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="product_add.html",
+        context={}
+    )
+
+
+@router.post("/add", include_in_schema=False)
+def add_product(
+    name: str = Form(...),
+    code: str = Form(...),
+    unit: str = Form(...),
+    import_price: float = Form(...),
+    selling_price: float = Form(...),
+    stock: int = Form(...),
+    db: Session = Depends(get_db)
+):
+    product = models.Product(
+        name=name,
+        code=code,
+        unit=unit,
+        import_price=import_price,
+        selling_price=selling_price,
+        stock=stock,
+        product_type="generic"
+    )
+
+    db.add(product)
+    db.commit()
+    # chuyển hướng sau khi lưu xong về trang sản phẩm
+    return RedirectResponse(
+        url="/products-page",
+        status_code=303
+    )
 
 @router.get("/{product_id}", response_model=Product)
 def get_product(
@@ -239,3 +275,4 @@ def products_page(
             "products": products
         }
     )
+
