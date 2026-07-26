@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>ĐĂNG KÝ TÀI KHOẢN</h2>
+
+<form action="/auth/register-page" method="post">
+
+    <p>
+        <label>Tên đăng nhập</label><br>
+        <input
+            type="text"
+            name="username"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Mật khẩu</label><br>
+        <input
+            type="password"
+            name="password"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Họ tên</label><br>
+        <input
+            type="text"
+            name="full_name"
+            required
+        >
+    </p>
+
+    <button type="submit">Đăng ký</button>
+
+</form>
+
+<br>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>SỬA NGƯỜI DÙNG</h2>
+
+<form action="/users/edit/{{ user.id }}" method="post">
+
+    <p>
+        <label>Tên đăng nhập</label><br>
+        <input
+            type="text"
+            name="username"
+            value="{{ user.username }}"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Mật khẩu</label><br>
+        <input
+            type="password"
+            name="password"
+            value="{{ user.password }}"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Họ tên</label><br>
+        <input
+            type="text"
+            name="full_name"
+            value="{{ user.full_name }}"
+            required
+        >
+    </p>
+
+    <p>
+        <label>Quyền</label><br>
+
+        <select name="role">
+
+            <option value="staff"
+                {% if user.role == "staff" %}selected{% endif %}>
+                Nhân viên bán hàng
+            </option>
+
+            <option value="manager"
+                {% if user.role == "manager" %}selected{% endif %}>
+                Quản lý cửa hàng
+            </option>
+
+            <option value="admin"
+                {% if user.role == "admin" %}selected{% endif %}>
+                Admin
+            </option>
+
+        </select>
+
+    </p>
+
+    <button type="submit">Lưu thay đổi</button>
+
+</form>
+
+<br>
+<a href="/users-page">Quay lại</a>
+
+{% endblock %}

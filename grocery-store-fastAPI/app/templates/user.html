@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>QUẢN LÝ NGƯỜI DÙNG</h2>
+
+<hr>
+
+<a href="/users/add">Thêm người dùng</a>
+
+<br><br>
+
+<table border="1" cellpadding="8">
+
+    <tr>
+        <th>ID</th>
+        <th>Tên đăng nhập</th>
+        <th>Họ tên</th>
+        <th>Quyền</th>
+        <th>Ngày tạo</th>
+        <th>Thao tác</th>
+    </tr>
+
+    {% for user in users %}
+
+    <tr>
+        <td>{{ user.id }}</td>
+
+        <td>{{ user.username }}</td>
+
+        <td>{{ user.full_name }}</td>
+
+        <td>
+            {% if user.role == "admin" %}
+                Admin
+            {% elif user.role == "manager" %}
+                Quản lý cửa hàng
+            {% else %}
+                Nhân viên bán hàng
+            {% endif %}
+        </td>
+
+        <td>{{ user.created_at }}</td>
+
+        <td>
+            <a href="/users/edit/{{ user.id }}">Sửa</a>
+            <a href="/users/delete/{{ user.id }}">Xóa</a>
+        </td>
+
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+{% endblock %}

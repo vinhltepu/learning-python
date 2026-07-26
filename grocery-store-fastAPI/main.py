@@ -8,7 +8,7 @@ from app.db.session import engine
 from app.db import base  #kích hoạt import models để create_all biết bảng nào cần tạo
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from app.api.endpoints import products, customers, invoices, stats
+from app.api.endpoints import products, customers, invoices, stats , users, auth 
 
 # Tạo tất cả các bảng trong cơ sở dữ liệu nếu chưa tồn tại
 base.Base.metadata.create_all(bind=engine)
@@ -26,6 +26,9 @@ app.include_router(products.router,  prefix="/products",  tags=["Products"])
 app.include_router(customers.router, prefix="/customers", tags=["Customers"])
 app.include_router(invoices.router,  prefix="/invoices",  tags=["Invoices"])
 app.include_router(stats.router,     prefix="/stats",     tags=["Stats"])
+app.include_router(users.router,     prefix="/users",     tags=["Users"])
+app.include_router(auth.router,      prefix="/auth",      tags=["Authentication"])
+
 
 @app.get("/", include_in_schema=False)
 def home(request: Request):

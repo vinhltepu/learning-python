@@ -84,7 +84,7 @@ Chứa thông tin của người dùng — đây là dữ liệu server muốn g
   "role": "admin"
 }
 
-# Lưu ý : Payload chỉ được mã hóa Base64, không phải mã hóa bảo mật — ai cũng decode đọc được nội dung bên trong không dược lưu trong Payload :
+ Lưu ý : Payload chỉ được mã hóa Base64, không phải mã hóa bảo mật — ai cũng decode đọc được nội dung bên trong không dược lưu trong Payload :
 
 - Mật khẩu (Password)
 - Thông tin ngân hàng
@@ -92,7 +92,7 @@ Chứa thông tin của người dùng — đây là dữ liệu server muốn g
 - Bất kỳ dữ liệu nhạy cảm nào khác
 
 
-### 2.3. Signature (chữ ký)
+### 2.3. Signature 
 
 Server dùng 3 thứ để tạo ra Signature:
 
