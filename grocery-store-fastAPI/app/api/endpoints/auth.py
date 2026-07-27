@@ -8,17 +8,13 @@ from app.schemas.user import UserLogin, Token, RefreshToken
 from app.core.security import (
     create_access_token,
     create_refresh_token,
-    decode_token
+    decode_token,
+    hash_password,
+    verify_password
 )
 
 router = APIRouter()
-
-from fastapi import APIRouter, Depends, HTTPException, Header, Request
-from app.api.deps import get_db, templates
-
-router = APIRouter()
-
-
+# mở trang đăng nhập
 @router.get("/login-page", include_in_schema=False)
 def login_page(request: Request):
 
@@ -27,6 +23,69 @@ def login_page(request: Request):
         name="login.html",
         context={}
     )
+
+# xử lý đăng nhập 
+@router.post("/login-page", include_in_schema=False)
+def login_page(
+
+    username: str = Form(...),
+    password: str = Form(...),
+
+    db: Session = Depends(get_db)
+
+):
+
+    db_user = db.query(models.User).filter(
+        models.User.username == username
+    ).first()
+
+    if not db_user:
+        raise HTTPException(
+            status_code=400,
+            detail="Tên đăng nhập không đúng"
+        )
+
+    if not verify_password(password, db_user.password):
+        raise HTTPException(
+            status_code=400,
+            detail="Mật khẩu không đúng"
+        )
+# tạo JWT
+    # Tạo Access Token
+    access_token = create_access_token(
+        {
+            "sub": db_user.username,
+            "role": db_user.role
+        }
+    )
+
+    # Tạo Refresh Token
+    refresh_token = create_refresh_token(
+        {
+            "sub": db_user.username
+        }
+    )
+# chuyển người dùng đến trang phù hợp với vai trò của họ
+    if db_user.role == "admin":
+
+        return RedirectResponse(
+            url="/admin",
+            status_code=303
+        )
+
+    elif db_user.role == "manager":
+
+        return RedirectResponse(
+            url="/manager",
+            status_code=303
+        )
+
+    else:
+
+        return RedirectResponse(
+            url="/shop",
+            status_code=303
+        )
 
 # API đăng nhập, trả về access token và refresh token
 @router.post("/login", response_model=Token)
@@ -45,7 +104,7 @@ def login(
             detail="Tên đăng nhập không đúng"
         )
 
-    if db_user.password != user.password:
+    if not verify_password(user.password, db_user.password):
         raise HTTPException(
             status_code=400,
             detail="Mật khẩu không đúng"
@@ -106,7 +165,7 @@ def register(
     # tạo tài khoản mới
     new_user = models.User(
         username=username,
-        password=password,
+        password=hash_password(password),
         full_name=full_name,
         role="staff"
     )

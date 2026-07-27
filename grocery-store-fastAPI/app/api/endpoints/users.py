@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import List
-
+from app.core.security import hash_password
 from app.api.deps import get_db, templates, admin_required
 from app import models
 from app.schemas.user import User, UserCreate, UserUpdate
@@ -76,7 +76,7 @@ def add_user(
 
     user = models.User(
         username=username,
-        password=password,
+        password=hash_password(password)    ,
         full_name=full_name,
         role=role
     )
@@ -135,7 +135,7 @@ def create_user(
 
     user = models.User(
         username=data.username,
-        password=data.password,
+        password=hash_password(data.password),
         full_name=data.full_name,
         role=data.role
     )
@@ -229,7 +229,7 @@ def edit_user(
     ).first()
 
     user.username = username
-    user.password = password
+    user.password = hash_password(password)
     user.full_name = full_name
     user.role = role
 

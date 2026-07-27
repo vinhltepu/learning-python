@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 import jwt
-
+from app.core.security import hash_password , verify_password
 # khóa dùng để mã hóa và giải mã jwwt
 SECRET_KEY = "quangthuy-secret-key"
 
@@ -14,12 +14,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
+# mã hóa mật khẩu trước khi lưu vào database
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto"
+)
+
+
 # tạo access token để xác thực người dùng khi truy cập API. Access token có thời gian sống ngắn hơn refresh token.
 def create_access_token(data: dict):
-    """
-    Tạo Access Token.
-    Access Token dùng để xác thực người dùng khi truy cập API.
-    """
+
 
     # sao chép dữ liệu truyền vào
     payload = data.copy()
@@ -75,3 +79,20 @@ def decode_token(token: str):
 
     except jwt.InvalidTokenError:
         return None
+
+# mã hóa mật khẩu
+def hash_password(password: str):
+
+    return pwd_context.hash(password)
+
+
+# kiểm tra mật khẩu
+def verify_password(
+    plain_password: str,
+    hashed_password: str
+):
+
+    return pwd_context.verify(
+        plain_password,
+        hashed_password
+    )

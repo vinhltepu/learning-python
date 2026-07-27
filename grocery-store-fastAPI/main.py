@@ -82,6 +82,30 @@ def stats_page(request: Request, db: Session = Depends(get_db)):
         }
     )
 
+@app.get("/admin", include_in_schema=False)
+def admin_page(request: Request):
 
-    
+    return templates.TemplateResponse(
+        request=request,
+        name="admin.html",
+        context={}
+    )
+
+@app.get("/manager", include_in_schema=False)
+def manager_page(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="manager.html",
+        context={}
+    )
+
+@app.get("/shop", include_in_schema=False)
+def shop_page(request: Request):
+
+    return templates.TemplateResponse(
+        request=request,
+        name="shop.html",
+        context={}
+    )
 
