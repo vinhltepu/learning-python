@@ -2,20 +2,39 @@
 
 {% block content %}
 
-<h2>TRANG MUA HÀNG</h2>
+<h2>DANH SÁCH SẢN PHẨM</h2>
 
-<hr>
+<table border="1" cellpadding="8">
 
-<p>Xin chào khách hàng</p>
+<tr>
+    <th>Tên sản phẩm</th>
+    <th>Giá bán</th>
+    <th>Tồn kho</th>
+    <th></th>
+</tr>
 
-<ul>
+{% for product in products %}
 
-    <li><a href="/products-page">Xem sản phẩm</a></li>
+<tr>
 
-    <li><a href="/cart">Giỏ hàng</a></li>
+    <td>{{ product.name }}</td>
 
-    <li><a href="/history">Lịch sử mua hàng</a></li>
+    <td>{{ product.sale_price }}</td>
 
-</ul>
+    <td>{{ product.stock }}</td>
+
+    <td>
+
+        <a href="#">
+            Thêm vào giỏ
+        </a>
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
 
 {% endblock %}

@@ -8,7 +8,7 @@ from app.db.session import engine
 from app.db import base  #kích hoạt import models để create_all biết bảng nào cần tạo
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from app.api.endpoints import products, customers, invoices, stats , users, auth 
+from app.api.endpoints import products, customers, invoices, stats , users, auth , admin , manager , shop
 
 # Tạo tất cả các bảng trong cơ sở dữ liệu nếu chưa tồn tại
 base.Base.metadata.create_all(bind=engine)
@@ -28,6 +28,10 @@ app.include_router(invoices.router,  prefix="/invoices",  tags=["Invoices"])
 app.include_router(stats.router,     prefix="/stats",     tags=["Stats"])
 app.include_router(users.router,     prefix="/users",     tags=["Users"])
 app.include_router(auth.router,      prefix="/auth",      tags=["Authentication"])
+
+app.include_router(admin.router,     prefix="/admin",     tags=["Admin"])
+app.include_router(manager.router,   prefix="/manager",   tags=["Manager"])
+app.include_router(shop.router,      prefix="/shop",      tags=["Shop"])
 
 
 @app.get("/", include_in_schema=False)
@@ -80,32 +84,5 @@ def stats_page(request: Request, db: Session = Depends(get_db)):
             "total_invoices": db.query(models.Invoice).count(),
             "total_revenue": db.query(func.sum(models.Invoice.final_amount)).scalar() or 0
         }
-    )
-
-@app.get("/admin", include_in_schema=False)
-def admin_page(request: Request):
-
-    return templates.TemplateResponse(
-        request=request,
-        name="admin.html",
-        context={}
-    )
-
-@app.get("/manager", include_in_schema=False)
-def manager_page(request: Request):
-
-    return templates.TemplateResponse(
-        request=request,
-        name="manager.html",
-        context={}
-    )
-
-@app.get("/shop", include_in_schema=False)
-def shop_page(request: Request):
-
-    return templates.TemplateResponse(
-        request=request,
-        name="shop.html",
-        context={}
     )
 
